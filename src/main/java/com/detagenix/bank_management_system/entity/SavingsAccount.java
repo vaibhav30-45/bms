@@ -3,34 +3,30 @@ package com.detagenix.bank_management_system.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
-@Table(name="savings_account")
+@Table(name = "savings_accounts")
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class SavingsAccount extends Account {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(nullable = false)
-    private Long id;
 
     @Column(nullable = false)
     private Double interestRate;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal withdrawalLimit;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal dailyTxnLimit;
 
     @Column(nullable = false)
     private Integer maxWithdrawals;
 
-    @Column(nullable = false)
-    private Date lastInterestDate;
+    private LocalDate lastInterestDate;
 }

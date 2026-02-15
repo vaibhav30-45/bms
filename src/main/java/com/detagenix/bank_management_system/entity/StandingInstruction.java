@@ -2,41 +2,44 @@ package com.detagenix.bank_management_system.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
-@Table(name="standing_instruction")
+@Table(name = "standing_instructions")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StandingInstruction {
+@Builder
+public class StandingInstruction extends BaseEntity {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(nullable = false)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long instructionId;
 
-    @Column(nullable = false)
-    private String instructionId;
-
-    @Column(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "from_account_id", nullable = false)
     private Account fromAccount;
 
-    @Column(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "beneficiary_id", nullable = false)
     private Beneficiary beneficiary;
 
-    @Column(nullable = false)
-    private Double amount;
+    @Column(nullable = false, precision = 15, scale = 2)
+    private BigDecimal amount;
+
+    @Column(nullable = false, length = 50)
+    private String frequency;  // DAILY, WEEKLY, MONTHLY
 
     @Column(nullable = false)
-    private String frequency;
+    private LocalDate startDate;
 
     @Column(nullable = false)
-    private Date startDate;
+    private LocalDate endDate;
 
     @Column(nullable = false)
-    private Date endDate;
+    private Boolean isActive = true;
 }

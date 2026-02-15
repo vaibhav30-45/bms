@@ -1,31 +1,42 @@
-package com.detagenix.bank_management_system.entities.user;
+package com.detagenix.bank_management_system.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "addresses")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Address {
+@Builder
+public class Address extends BaseEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long addressId;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
+    @Column(nullable = false, length = 200)
     private String addressLine1;
-    private String addressLine2;
-    private String city;
-    private String state;
-    private String pincode;
-    private String addressType;
 
+    @Column(length = 200)
+    private String addressLine2;
+
+    @Column(nullable = false, length = 100)
+    private String city;
+
+    @Column(nullable = false, length = 100)
+    private String state;
+
+    @Column(nullable = false, length = 6)
+    private String pincode;
+
+    @Column(length = 50)
+    private String addressType;  // PERMANENT, CURRENT
 }

@@ -1,48 +1,52 @@
 package com.detagenix.bank_management_system.entity;
 
+import com.detagenix.bank_management_system.enums.AccountStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-//@Entity
-//@Table(name="account")
+@Entity
+@Table(name = "accounts")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Account {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(nullable = false)
-    private Long id;
+@Inheritance(strategy = InheritanceType.JOINED)
+public class Account extends BaseEntity {
 
-    @Column(nullable = false)
-    private String accountId;
-    @Column(nullable = false)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long accountId;
+
+    @Column(unique = true, nullable = false, length = 20)
     private String accountNumber;
 
-    @ManyToOne
-    @JoinColumn(name="branchId", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "branch_id", nullable = false)
     private Branch branch;
 
-    @Column(nullable = false)
-    private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user;
 
-    @Column(nullable = false)
-    private BigDecimal accountBalance;
+    @Column(nullable = false, precision = 15, scale = 2)
+    private BigDecimal accountBalance = BigDecimal.ZERO;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal minimumRequiredBalance;
 
     @Column(nullable = false)
-    private boolean isActive;
+    private Boolean isActive = true;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 50)
+    private AccountStatus accountStatus;
 
     @Column(nullable = false)
-    private String accountStatus; // or Enum
-
-    @Column(nullable = false)
-    @CreationTimestamp
     private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreateAccount() {
+        this.createdAt = LocalDateTime.now();
+    }
 }

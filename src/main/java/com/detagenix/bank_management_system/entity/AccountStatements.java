@@ -2,38 +2,36 @@ package com.detagenix.bank_management_system.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
-@Table(name="account_statements")
+@Table(name = "account_statements")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccountStatements {
+@Builder
+public class AccountStatements extends BaseEntity {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(nullable = false)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long statementId;
 
-    @Column(nullable = false)
-    private String statementId;
-
-    @Column(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
     @Column(nullable = false)
-    private Date fromDate;
+    private LocalDate fromDate;
 
     @Column(nullable = false)
-    private Date toDate;
+    private LocalDate toDate;
 
     @Column(nullable = false)
-    private Date generatedAt;
+    private LocalDate generatedAt;
 
-    @Column(nullable = false)
-    private String format;
+    @Column(nullable = false, length = 20)
+    private String format;  // PDF, CSV, etc.
 }

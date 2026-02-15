@@ -1,35 +1,43 @@
-package com.detagenix.bank_management_system.entities.user;
+package com.detagenix.bank_management_system.entity;
 
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
+@Entity
+@Table(name = "activity_logs")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ActivityLog {
+public class ActivityLog extends BaseEntity {
 
     @Id
-    private String logId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long logId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private UserEntity user;
+
+    @Column(nullable = false, length = 100)
     private String activityType;
+
+    @Column(length = 50)
     private String ipAddress;
+
+    @Column(length = 500)
     private String userAgent;
+
+    @Column(nullable = false)
     private LocalDateTime timestamp;
-    private boolean successful;
 
-    public boolean log() {
-        return true;
-    }
+    @Column(nullable = false)
+    private Boolean successful;
 
-    public List<ActivityLog> getHistory() {
-        return new ArrayList<>();
-    }
+    // Remove this method - belongs in Service/Repository
+    // public List<ActivityLog> getHistory() { return new ArrayList<>(); }
 }
