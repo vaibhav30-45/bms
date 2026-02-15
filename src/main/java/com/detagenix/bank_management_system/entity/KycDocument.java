@@ -1,37 +1,49 @@
-package com.detagenix.bank_management_system.entities.user;
+package com.detagenix.bank_management_system.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import com.detagenix.bank_management_system.enums.KycStatus;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "kyc_documents")
 @Data
-public class KycDocument {
-    @Id
-    private String documentId;
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class KycDocument extends BaseEntity {
 
-    @ManyToOne
-    @JoinColumn(name = "document_user_id")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long documentId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private UserEntity documentUser;
+
+    @Column(nullable = false, length = 50)
     private String documentType;
+
+    @Column(length = 500)
     private String documentDescription;
+
+    @Column(length = 50)
     private String documentCategory;
-    private String documentStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 50)
+    private KycStatus documentStatus;
+
+    @Column(length = 50)
     private String documentNumber;
+
+    @Column(nullable = false, length = 500)
     private String documentPath;
 
-    public String uploadDocument() {
-
-        return "";
-    }
-    public String verifyDocument() {
-        return "";
-    }
-
-    public String rejectDocument() {
-        return "";
-    }
-
+    // Remove these methods - they belong in a Service class, not Entity
+    // public String uploadDocument() { return ""; }
+    // public String verifyDocument() { return ""; }
+    // public String rejectDocument() { return ""; }
 }

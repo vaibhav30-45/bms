@@ -4,31 +4,29 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "branch")
+@Table(name = "branches")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Branch {
+@Builder
+public class Branch extends BaseEntity {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(nullable = false)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long branchId;
 
-    @Column(nullable = false)
-    private String branchId;
-
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false, length = 20)
     private String branchCode;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 200)
     private String branchName;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false, length = 11)
     private String ifscCode;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 500)
     private String address;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 15)
     private String phoneNumber;
 }
