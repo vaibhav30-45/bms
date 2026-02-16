@@ -1,0 +1,157 @@
+package com.detagenix.bank_management_system.service.impl;
+
+import com.detagenix.bank_management_system.dto.request.UserRegistrationRequest;
+import com.detagenix.bank_management_system.dto.response.UserRegistrationResponse;
+import com.detagenix.bank_management_system.entity.Address;
+import com.detagenix.bank_management_system.entity.UserEntity;
+import com.detagenix.bank_management_system.enums.UserStatus;
+import com.detagenix.bank_management_system.exception.DuplicateResourceException;
+import com.detagenix.bank_management_system.exception.ValidationException;
+import com.detagenix.bank_management_system.repository.AddressRepository;
+import com.detagenix.bank_management_system.repository.UserRepository;
+import com.detagenix.bank_management_system.service.UserService;
+import com.detagenix.bank_management_system.util.Constants;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.Period;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class UserServiceImpl implements UserService {
+
+    private final UserRepository userRepository;
+    private final AddressRepository addressRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    /**
+     * Register a new user with complete validation and data persistence
+     */
+    @Override
+    @Transactional
+    public UserRegistrationResponse registerUser(UserRegistrationRequest request) {
+
+        log.info("Starting user registration for email: {}", request.getEmail());
+
+        // Step 1: Validate no duplicates exist
+        validateNoDuplicates(request);
+
+        // Step 2: Validate age requirement
+        validateAge(request.getDateOfBirth());
+
+        // Step 3: Create and save User entity
+        UserEntity user = createUserEntity(request);
+        UserEntity savedUser = userRepository.save(user);
+
+        log.info("User created successfully with ID: {}", savedUser.getUserId());
+
+        // Step 4: Create and save Address entity
+        Address address = createAddressEntity(request, savedUser);
+        Address savedAddress = addressRepository.save(address);
+
+        log.info("Address created successfully with ID: {}", savedAddress.getAddressId());
+
+        // Step 5: Build and return response
+        return buildRegistrationResponse(savedUser, savedAddress);
+    }
+
+    /**
+     * Validate that email, phone, PAN, and Aadhaar are unique
+     */
+    private void validateNoDuplicates(UserRegistrationRequest request) {
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            log.warn("Registration failed: Email already exists - {}", request.getEmail());
+            throw new DuplicateResourceException(Constants.ERROR_EMAIL_ALREADY_EXISTS);
+        }
+
+        if (userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+            log.warn("Registration failed: Phone already exists - {}", request.getPhoneNumber());
+            throw new DuplicateResourceException(Constants.ERROR_PHONE_ALREADY_EXISTS);
+        }
+    }
+
+    /**
+     * Validate user meets minimum age requirement (18 years)
+     */
+    private void validateAge(LocalDate dateOfBirth) {
+        int age = Period.between(dateOfBirth, LocalDate.now()).getYears();
+
+        if (age < Constants.MINIMUM_AGE) {
+            log.warn("Registration failed: User age {} is below minimum {}", age, Constants.MINIMUM_AGE);
+            throw new ValidationException(Constants.ERROR_MINIMUM_AGE);
+        }
+
+        log.info("Age validation passed: {} years old", age);
+    }
+
+    /**
+     * Create UserEntity from registration request
+     * Password is hashed using BCrypt
+     */
+    private UserEntity createUserEntity(UserRegistrationRequest request) {
+
+        int age = Period.between(request.getDateOfBirth(), LocalDate.now()).getYears();
+
+        return UserEntity.builder()
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .email(request.getEmail())
+                .phoneNumber(request.getPhoneNumber())
+                .password(passwordEncoder.encode(request.getPassword())) // Hash password
+                .dateOfBirth(request.getDateOfBirth())
+                .age(age)
+                .isMinor(age < 18)
+                .panNumber(null) // Will be added during account application
+                .aadhaarNumber(null)
+                .isActiveUser(true)
+                .failedLoginAttempts(0)
+                .role("CUSTOMER") // Default role
+                .userStatus(UserStatus.REGISTERED) // Initial status
+                .build();
+    }
+
+    /**
+     * Create Address entity linked to the user
+     */
+    private Address createAddressEntity(UserRegistrationRequest request, UserEntity user) {
+
+        return Address.builder()
+                .user(user)
+                .addressLine1(request.getAddress())
+                .addressLine2(null) // Optional - can be added later
+                .city(request.getCity())
+                .state(request.getState())
+                .pincode(request.getPinCode())
+                .addressType("PERMANENT") // Default address type
+                .build();
+    }
+
+    /**
+     * Build the registration response DTO
+     */
+    private UserRegistrationResponse buildRegistrationResponse(UserEntity user, Address address) {
+
+        return UserRegistrationResponse.builder()
+                .userId(user.getUserId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .dateOfBirth(user.getDateOfBirth())
+                .address(address.getAddressLine1())
+                .city(address.getCity())
+                .state(address.getState())
+                .pinCode(address.getPincode())
+                .userStatus(user.getUserStatus())
+                .isActiveUser(user.getIsActiveUser())
+                .registeredAt(user.getCreatedOn())
+                .message(Constants.SUCCESS_USER_REGISTERED)
+                .build();
+    }
+}
