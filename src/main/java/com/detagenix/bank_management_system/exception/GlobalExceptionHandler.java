@@ -11,16 +11,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Global exception handler for the entire application
- * Catches all exceptions and returns standardized error responses
- */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    /**
-     * Handle resource not found exceptions (404)
-     */
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiResponse<Object>> handleResourceNotFound(ResourceNotFoundException ex) {
         return ResponseEntity
@@ -28,9 +21,6 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(ex.getMessage()));
     }
 
-    /**
-     * Handle bad request exceptions (400)
-     */
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ApiResponse<Object>> handleBadRequest(BadRequestException ex) {
         return ResponseEntity
@@ -38,9 +28,6 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(ex.getMessage()));
     }
 
-    /**
-     * Handle duplicate resource exceptions (409)
-     */
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<ApiResponse<Object>> handleDuplicateResource(DuplicateResourceException ex) {
         return ResponseEntity
@@ -48,10 +35,13 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(ex.getMessage()));
     }
 
-    /**
-     * Handle validation errors (400)
-     * Automatically triggered by @Valid annotation
-     */
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ApiResponse<Object>> handleValidationException(ValidationException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Map<String, String>>> handleValidationExceptions(
             MethodArgumentNotValidException ex) {
@@ -72,12 +62,9 @@ public class GlobalExceptionHandler {
                         .build());
     }
 
-    /**
-     * Handle all other exceptions (500)
-     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Object>> handleGlobalException(Exception ex) {
-        ex.printStackTrace(); // Log for debugging
+        ex.printStackTrace();
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)

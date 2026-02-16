@@ -33,8 +33,11 @@ public class UserEntity extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column(unique = true, nullable = false, length = 10)
+    @Column(unique = true, length = 10)
     private String panNumber;
+
+    @Column(unique = true, length = 12)
+    private String aadhaarNumber;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 10)
