@@ -2,7 +2,7 @@
 
 ## Version: 1.0
 ## Last Updated: 2026-02-16
-## Owner: Backend Team (Hardik - Lead)
+## Owner: Backend Team (Anish - Lead)
 
 ---
 
