@@ -125,6 +125,12 @@ public class Constants {
     public static final String SUCCESS_TRANSACTION_COMPLETED = "Transaction completed successfully";
     public static final String SUCCESS_KYC_SUBMITTED = "KYC documents submitted successfully";
 
+    // Branch Messages
+    public static final String SUCCESS_BRANCHES_RETRIEVED = "Branches retrieved successfully";
+    public static final String SUCCESS_BRANCH_FOUND = "Branch found";
+    public static final String SUCCESS_BRANCHES_FOUND = "Branches found";
+    public static final String ERROR_BRANCH_NOT_FOUND = "Branch not found";
+
     // Private constructor to prevent instantiation
     private Constants() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
