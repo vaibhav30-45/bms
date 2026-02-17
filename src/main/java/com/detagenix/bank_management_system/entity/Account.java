@@ -45,7 +45,7 @@ public class Account extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @PrePersist
+//    @PrePersist : already created
     protected void onCreateAccount() {
         this.createdAt = LocalDateTime.now();
     }

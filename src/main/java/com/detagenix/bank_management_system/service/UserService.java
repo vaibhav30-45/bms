@@ -1,6 +1,8 @@
 package com.detagenix.bank_management_system.service;
 
+import com.detagenix.bank_management_system.dto.request.LoginRequest;
 import com.detagenix.bank_management_system.dto.request.UserRegistrationRequest;
+import com.detagenix.bank_management_system.dto.response.LoginResponse;
 import com.detagenix.bank_management_system.dto.response.UserRegistrationResponse;
 import com.detagenix.bank_management_system.exception.DuplicateResourceException;
 

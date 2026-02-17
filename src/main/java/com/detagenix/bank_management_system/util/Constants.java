@@ -93,7 +93,7 @@ public class Constants {
     public static final int MAXIMUM_AGE = 100;
 
     // ============ JWT SETTINGS (Phase 2) ============
-    public static final long JWT_EXPIRATION = 86400000L; // 24 hours in milliseconds
+//    public static final long JWT_EXPIRATION = 86400000L; // 24 hours in milliseconds
 
     // ============ OTP SETTINGS (Future) ============
     public static final int OTP_LENGTH = 6;
@@ -120,6 +120,7 @@ public class Constants {
 
     // ============ SUCCESS MESSAGES ============
     public static final String SUCCESS_USER_REGISTERED = "User registered successfully";
+    public static final String SUCCESS_LOGIN = "Login successful";
     public static final String SUCCESS_ACCOUNT_CREATED = "Account created successfully";
     public static final String SUCCESS_TRANSACTION_COMPLETED = "Transaction completed successfully";
     public static final String SUCCESS_KYC_SUBMITTED = "KYC documents submitted successfully";
@@ -128,4 +129,13 @@ public class Constants {
     private Constants() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
+
+    // JWT Settings
+//    public static final String JWT_SECRET = "your-256-bit-secret";
+
+    // Messages
+    public static final String ERROR_ACCOUNT_LOCKED = "Account is locked due to multiple failed login attempts";
+    public static final String ERROR_ACCOUNT_INACTIVE = "Account is inactive. Please contact support";
+    public static final int MAX_FAILED_LOGIN_ATTEMPTS = 5;
+
 }
