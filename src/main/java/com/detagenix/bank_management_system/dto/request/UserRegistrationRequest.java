@@ -77,4 +77,9 @@ public class UserRegistrationRequest {
             message = Constants.MSG_PINCODE_INVALID)
     private String pinCode;
 
+    //Normalized email: convert email to lowercase before storing in db for consistency
+    public void setEmail(String email){
+        this.email = email == null ? null : email.trim().toLowerCase();
+    }
+
 }

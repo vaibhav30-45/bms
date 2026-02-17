@@ -1,9 +1,11 @@
 package com.detagenix.bank_management_system.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
 
 /**
  * Standard API response wrapper
@@ -18,6 +20,8 @@ public class ApiResponse<T> {
     private Boolean success;
     private String message;
     private T data;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime timestamp;
 
     /**
      * Create success response with data
@@ -26,6 +30,7 @@ public class ApiResponse<T> {
         return ApiResponse.<T>builder()
                 .success(true)
                 .data(data)
+                .timestamp(LocalDateTime.now())
                 .build();
     }
 
@@ -37,6 +42,7 @@ public class ApiResponse<T> {
                 .success(true)
                 .message(message)
                 .data(data)
+                .timestamp(LocalDateTime.now())
                 .build();
     }
 
@@ -57,7 +63,6 @@ public class ApiResponse<T> {
         return ApiResponse.<T>builder()
                 .success(false)
                 .message(message)
-                .data(data)
                 .build();
     }
 }
