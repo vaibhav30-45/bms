@@ -1,8 +1,7 @@
 package com.detagenix.bank_management_system.service;
 
-import com.detagenix.bank_management_system.dto.request.LoginRequest;
 import com.detagenix.bank_management_system.dto.request.UserRegistrationRequest;
-import com.detagenix.bank_management_system.dto.response.LoginResponse;
+import com.detagenix.bank_management_system.dto.response.UserProfileResponse;
 import com.detagenix.bank_management_system.dto.response.UserRegistrationResponse;
 import com.detagenix.bank_management_system.exception.DuplicateResourceException;
 
@@ -27,4 +26,6 @@ public interface UserService {
     // UserDetailsResponse getUserById(Long userId);
     // UserDetailsResponse updateUser(Long userId, UpdateUserRequest request);
     // void deleteUser(Long userId);
+
+    UserProfileResponse getUserProfile(Long userId);
 }

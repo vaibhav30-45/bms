@@ -16,6 +16,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
+    //Used during LOGIN (email + password)
     @Override
     public UserDetails loadUserByUsername(String email)
             throws UsernameNotFoundException {
@@ -27,6 +28,21 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(()->{
                     log.error("User not found with email: {}", email);
                     return new UsernameNotFoundException("Invalid credentials");
+                });
+
+        return new CustomUserDetails(user);
+    }
+
+    //Used during JWT validation
+    public UserDetails loadUserById(Long userId) {
+
+        log.info("Loading user from JWT with userId: {}", userId);
+
+        UserEntity user = userRepository
+                .findById(userId)
+                .orElseThrow(() -> {
+                    log.error("User not found with id: {}", userId);
+                    return new UsernameNotFoundException("User not found");
                 });
 
         return new CustomUserDetails(user);

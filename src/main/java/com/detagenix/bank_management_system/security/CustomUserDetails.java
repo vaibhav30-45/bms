@@ -21,6 +21,10 @@ public class CustomUserDetails implements UserDetails {
         return user;
     }
 
+    public Long getUserId() {return user.getUserId();}
+
+    public String getEmail() {return user.getEmail();}
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(
