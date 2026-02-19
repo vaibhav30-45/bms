@@ -27,6 +27,12 @@ public class Branch extends BaseEntity {
     @Column(nullable = false, length = 500)
     private String address;
 
+    @Column(nullable = false, length = 100)
+    private String city;
+
+    @Column(nullable = false, length = 100)
+    private String state;
+
     @Column(nullable = false, length = 15)
     private String phoneNumber;
 }
