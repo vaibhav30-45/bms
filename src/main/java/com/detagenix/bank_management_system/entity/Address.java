@@ -1,5 +1,6 @@
 package com.detagenix.bank_management_system.entity;
 
+import com.detagenix.bank_management_system.enums.AddressType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,6 +38,7 @@ public class Address extends BaseEntity {
     @Column(nullable = false, length = 6)
     private String pincode;
 
-    @Column(length = 50)
-    private String addressType;  // PERMANENT, CURRENT
+    @Enumerated(EnumType.STRING)
+    @Column(name = "address_type",length = 50)
+    private AddressType addressType;  // PERMANENT, CURRENT
 }

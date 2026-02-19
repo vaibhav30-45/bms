@@ -1,13 +1,10 @@
 package com.detagenix.bank_management_system.controller;
 
-import com.detagenix.bank_management_system.dto.request.LoginRequest;
 import com.detagenix.bank_management_system.dto.request.UserRegistrationRequest;
 import com.detagenix.bank_management_system.dto.response.ApiResponse;
-import com.detagenix.bank_management_system.dto.response.LoginResponse;
+import com.detagenix.bank_management_system.dto.response.UserProfileResponse;
 import com.detagenix.bank_management_system.dto.response.UserRegistrationResponse;
-import com.detagenix.bank_management_system.service.AuthService;
 import com.detagenix.bank_management_system.service.UserService;
-import com.detagenix.bank_management_system.util.Constants;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -61,9 +58,15 @@ public class UserController {
         );
     }
 
-    @GetMapping("/profile")
-    public String profile(){
-        return "This is protected profile data";
+    @GetMapping("/profile/{userId}")
+    public ResponseEntity<ApiResponse<UserProfileResponse>> profile(
+            @PathVariable Long userId
+    ) {
+        UserProfileResponse profile = userService.getUserProfile(userId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("User profile retrieved successfully", profile));
     }
 
 }

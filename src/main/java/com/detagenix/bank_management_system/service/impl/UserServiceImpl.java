@@ -1,11 +1,14 @@
 package com.detagenix.bank_management_system.service.impl;
 
 import com.detagenix.bank_management_system.dto.request.UserRegistrationRequest;
+import com.detagenix.bank_management_system.dto.response.UserProfileResponse;
 import com.detagenix.bank_management_system.dto.response.UserRegistrationResponse;
 import com.detagenix.bank_management_system.entity.Address;
 import com.detagenix.bank_management_system.entity.UserEntity;
+import com.detagenix.bank_management_system.enums.AddressType;
 import com.detagenix.bank_management_system.enums.UserStatus;
 import com.detagenix.bank_management_system.exception.DuplicateResourceException;
+import com.detagenix.bank_management_system.exception.ResourceNotFoundException;
 import com.detagenix.bank_management_system.exception.ValidationException;
 import com.detagenix.bank_management_system.repository.AddressRepository;
 import com.detagenix.bank_management_system.repository.UserRepository;
@@ -13,6 +16,8 @@ import com.detagenix.bank_management_system.service.UserService;
 import com.detagenix.bank_management_system.util.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +63,38 @@ public class UserServiceImpl implements UserService {
 
         // Step 5: Build and return response
         return buildRegistrationResponse(savedUser, savedAddress);
+    }
+
+    @Override
+    public UserProfileResponse getUserProfile(Long userId) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        log.info("Fetching profile for user with email: {}", email);
+
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        Address address = addressRepository.findByUserAndAddressType(user, AddressType.PERMANENT)
+                .orElseThrow(() -> new ResourceNotFoundException("Permanent address not found "));
+
+        return UserProfileResponse.builder()
+                .userId(user.getUserId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .dateOfBirth(user.getDateOfBirth())
+                .age(user.getAge())
+                .address(address.getAddressLine1())
+                .city(address.getCity())
+                .state(address.getState())
+                .pinCode(address.getPincode())
+                .userStatus(user.getUserStatus())
+                .isActiveUser(user.getIsActiveUser())
+                .registeredAt(user.getCreatedOn())
+                .build();
     }
 
     /**
@@ -128,7 +165,7 @@ public class UserServiceImpl implements UserService {
                 .city(request.getCity())
                 .state(request.getState())
                 .pincode(request.getPinCode())
-                .addressType("PERMANENT") // Default address type
+                .addressType(AddressType.PERMANENT) // Default address type
                 .build();
     }
 

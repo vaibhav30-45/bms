@@ -11,7 +11,7 @@ import java.util.Date;
 
 @Component
 @Getter
-public class JwtUtil {
+public class JwtUtil { //This class generate tokens
 
     private final String secretKey;
     private final long expirationTime;
@@ -28,14 +28,27 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    public String generateToken(String email){
+    public String generateToken(Long userId, String email){
         return Jwts.builder()
                 .setSubject(email)
+                .claim("userId", userId)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
+
+
+    public Long extractUserId(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("userId", Long.class);
+    }
+
 
     public String extractEmail(String token){
         return Jwts.parserBuilder()
