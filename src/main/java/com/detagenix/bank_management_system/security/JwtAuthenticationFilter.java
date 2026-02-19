@@ -37,37 +37,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         final String token = authHeader.substring(7);
-        String email;
+        Long userId;
 
         try {
-            email = jwtUtil.extractEmail(token);
+            userId = jwtUtil.extractUserId(token);
+            customUserDetailsService.loadUserById(userId);
         } catch (Exception e) {
             log.warn("Invalid JWT token: {}", e.getMessage());
             filterChain.doFilter(request, response);
             return;
         }
 
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (userId != null &&
+                SecurityContextHolder.getContext().getAuthentication() == null &&
+                jwtUtil.validateToken(token)) {
+            UserDetails userDetails = customUserDetailsService.loadUserById(userId);
+            UsernamePasswordAuthenticationToken authToken =
+                    new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
 
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+            authToken.setDetails(
+                    new WebAuthenticationDetailsSource().buildDetails(request)
+            );
 
-            if (jwtUtil.validateToken(token)) {
+            SecurityContextHolder.getContext().setAuthentication(authToken);
 
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities()
-                        );
-
-                authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                );
-
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-
-                log.info("JWT authenticated user: {}", email);
-            }
+            log.info("JWT authenticated userId: {}", userId);
         }
 
         filterChain.doFilter(request, response);
