@@ -2,8 +2,10 @@ package com.detagenix.bank_management_system.security;
 
 import com.detagenix.bank_management_system.entity.UserEntity;
 import com.detagenix.bank_management_system.repository.UserRepository;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,7 +20,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     //Used during LOGIN (email + password)
     @Override
-    public UserDetails loadUserByUsername(String email)
+    public UserDetails loadUserByUsername(@NotNull String email)
             throws UsernameNotFoundException {
 
         log.info("Loading user for authentication: {}", email);

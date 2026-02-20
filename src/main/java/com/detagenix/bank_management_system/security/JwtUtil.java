@@ -38,7 +38,6 @@ public class JwtUtil { //This class generate tokens
                 .compact();
     }
 
-
     public Long extractUserId(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
