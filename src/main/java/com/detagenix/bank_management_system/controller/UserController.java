@@ -1,16 +1,25 @@
 package com.detagenix.bank_management_system.controller;
 
+import com.detagenix.bank_management_system.dto.request.UpdateProfileRequest;
 import com.detagenix.bank_management_system.dto.request.UserRegistrationRequest;
 import com.detagenix.bank_management_system.dto.response.ApiResponse;
 import com.detagenix.bank_management_system.dto.response.UserProfileResponse;
 import com.detagenix.bank_management_system.dto.response.UserRegistrationResponse;
+import com.detagenix.bank_management_system.exception.UnauthorizedException;
+import com.detagenix.bank_management_system.exception.ValidationException;
+import com.detagenix.bank_management_system.security.CustomUserDetails;
 import com.detagenix.bank_management_system.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 /**
  * REST Controller for User-related operations
@@ -59,7 +68,7 @@ public class UserController {
     }
 
     @GetMapping("/profile/{userId}")
-    public ResponseEntity<ApiResponse<UserProfileResponse>> profile(
+    public ResponseEntity<ApiResponse<UserProfileResponse>> getProfile(
             @PathVariable Long userId
     ) {
         UserProfileResponse profile = userService.getUserProfile(userId);
@@ -67,6 +76,24 @@ public class UserController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success("User profile retrieved successfully", profile));
+    }
+
+    @PutMapping("/profile")
+    public ResponseEntity<ApiResponse<UserProfileResponse>> updateProfile(
+            Authentication authentication,
+            @Valid @RequestBody UpdateProfileRequest request
+    ) {
+
+        Long userId = (Long) authentication.getPrincipal();
+
+        log.info("Received update request for user ID: {}", userId);
+
+        UserProfileResponse response = userService.updateUserProfile(userId, request);
+
+        log.info("Profile updated successfully for userId: {}", userId);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Profile updated successfully", response));
     }
 
 }

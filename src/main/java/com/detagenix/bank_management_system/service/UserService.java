@@ -1,5 +1,6 @@
 package com.detagenix.bank_management_system.service;
 
+import com.detagenix.bank_management_system.dto.request.UpdateProfileRequest;
 import com.detagenix.bank_management_system.dto.request.UserRegistrationRequest;
 import com.detagenix.bank_management_system.dto.response.UserProfileResponse;
 import com.detagenix.bank_management_system.dto.response.UserRegistrationResponse;
@@ -28,4 +29,6 @@ public interface UserService {
     // void deleteUser(Long userId);
 
     UserProfileResponse getUserProfile(Long userId);
+
+    UserProfileResponse updateUserProfile(Long userId, UpdateProfileRequest request);
 }

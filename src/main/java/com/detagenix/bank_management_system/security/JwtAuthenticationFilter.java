@@ -24,9 +24,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService customUserDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         final String authHeader = request.getHeader("Authorization");
@@ -41,7 +39,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             userId = jwtUtil.extractUserId(token);
-            customUserDetailsService.loadUserById(userId);
         } catch (Exception e) {
             log.warn("Invalid JWT token: {}", e.getMessage());
             filterChain.doFilter(request, response);
@@ -51,17 +48,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (userId != null &&
                 SecurityContextHolder.getContext().getAuthentication() == null &&
                 jwtUtil.validateToken(token)) {
-            UserDetails userDetails = customUserDetailsService.loadUserById(userId);
-            UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            userDetails.getAuthorities()
-                    );
 
-            authToken.setDetails(
-                    new WebAuthenticationDetailsSource().buildDetails(request)
-            );
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userId, null, null);
+
+            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
             SecurityContextHolder.getContext().setAuthentication(authToken);
 

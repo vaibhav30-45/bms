@@ -1,5 +1,6 @@
 package com.detagenix.bank_management_system.service.impl;
 
+import com.detagenix.bank_management_system.dto.request.UpdateProfileRequest;
 import com.detagenix.bank_management_system.dto.request.UserRegistrationRequest;
 import com.detagenix.bank_management_system.dto.response.UserProfileResponse;
 import com.detagenix.bank_management_system.dto.response.UserRegistrationResponse;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -95,6 +97,76 @@ public class UserServiceImpl implements UserService {
                 .isActiveUser(user.getIsActiveUser())
                 .registeredAt(user.getCreatedOn())
                 .build();
+    }
+
+    private UserProfileResponse mapToUserProfileResponse(UserEntity user) {
+
+        Address address = addressRepository.findByUserUserIdAndAddressType(user.getUserId(), AddressType.PERMANENT)
+                .orElse(null);
+
+        return UserProfileResponse.builder()
+                .userId(user.getUserId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .dateOfBirth(user.getDateOfBirth())
+                .age(user.getAge())
+                .userStatus(user.getUserStatus())
+                .isActiveUser(user.getIsActiveUser())
+                .registeredAt(user.getCreatedOn())
+                .address(address != null ? address.getAddressLine1(): null)
+                .city(address != null ? address.getCity() : null)
+                .state(address != null ? address.getState() : null)
+                .pinCode(address != null ? address.getPincode() : null)
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public UserProfileResponse updateUserProfile(Long userId, UpdateProfileRequest request) {
+
+        //Fetch user first name and last name
+        UserEntity userInDb = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+
+        if (request.getFirstName() != null && !request.getFirstName().isBlank()) {
+            userInDb.setFirstName(request.getFirstName());
+        }
+        if (request.getLastName() != null && !request.getLastName().isBlank()) {
+            userInDb.setLastName(request.getLastName());
+        }
+
+        //Check if address update requested
+        boolean addressUpdateRequested = request.getAddress() != null && !request.getAddress().isBlank()||
+                request.getCity() != null && !request.getCity().isBlank()||
+                request.getState() != null && !request.getState().isBlank()||
+                request.getPinCode() != null && !request.getPinCode().isBlank();
+
+        //Fetch user address
+        if (addressUpdateRequested) {
+            Address address = addressRepository.findByUserUserIdAndAddressType(userInDb.getUserId(), AddressType.PERMANENT)
+                    .orElseThrow(() -> new ResourceNotFoundException("Permanent address not found"));
+
+            if (request.getAddress() != null) {
+                address.setAddressLine1(request.getAddress());
+            }
+
+            if (request.getCity() != null) {
+                address.setCity(request.getCity());
+            }
+
+            if (request.getState() != null) {
+                address.setState(request.getState());
+            }
+
+            if (request.getPinCode() != null) {
+                address.setPincode(request.getPinCode());
+            }
+        }
+
+        return mapToUserProfileResponse(userInDb);
     }
 
     /**
