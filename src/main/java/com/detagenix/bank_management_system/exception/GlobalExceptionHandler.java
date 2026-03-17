@@ -77,5 +77,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(ApiResponse.error(ex.getMessage()));
     }
+    
+    @ExceptionHandler(AccountAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse<Object>> handleAccountAlreadyExists(AccountAlreadyExistsException ex) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+    
+    @ExceptionHandler(InvalidAccountOperationException.class)
+    public ResponseEntity<ApiResponse<Object>> handleInvalidAccountOperation(InvalidAccountOperationException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+    
 
 }
