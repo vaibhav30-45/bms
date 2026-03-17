@@ -65,6 +65,16 @@ public class Constants {
     // ============ ACCOUNT NUMBER FORMAT ============
     public static final String ACCOUNT_NUMBER_PREFIX = "ACC";
     public static final int ACCOUNT_NUMBER_LENGTH = 16;
+    
+ // ============ ACCOUNT DEFAULTS - CURRENT ACCOUNT ============
+    public static final String DEFAULT_OVERDRAFT_LIMIT = "50000.00";
+    public static final String DEFAULT_MONTHLY_SERVICE_FEE = "500.00";
+    public static final int DEFAULT_FREE_TRANS_LIMIT = 10;
+    
+    
+ // ============ ACCOUNT DEFAULTS - SAVINGS ACCOUNT ============
+    public static final String DEFAULT_SAVINGS_WITHDRAWAL_LIMIT = "25000.00";
+    public static final String DEFAULT_SAVINGS_DAILY_TXN_LIMIT = "50000.00";
 
     // ============ TRANSACTION REFERENCE FORMAT ============
     public static final String TRANSACTION_REF_PREFIX = "TXN";
