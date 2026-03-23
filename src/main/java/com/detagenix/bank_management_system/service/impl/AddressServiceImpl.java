@@ -55,10 +55,6 @@ public class AddressServiceImpl implements AddressService{
         return addressMapper.toResponse(saved);
     }
 
-    // ─────────────────────────────────────────────
-    // READ
-    // ─────────────────────────────────────────────
-
     @Override
     @Transactional(readOnly = true)
     public List<AddressResponse> getMyAddresses(Long userId) {
@@ -105,10 +101,6 @@ public class AddressServiceImpl implements AddressService{
         return addressMapper.toResponse(address);
     }
 
-    // ─────────────────────────────────────────────
-    // UPDATE
-    // ─────────────────────────────────────────────
-
     @Override
     @Transactional
     public AddressResponse updateAddress(Long addressId, AddressUpdateRequest request, Long userId) {
@@ -136,10 +128,6 @@ public class AddressServiceImpl implements AddressService{
         return addressMapper.toResponse(updated);
     }
 
-    // ─────────────────────────────────────────────
-    // DELETE
-    // ─────────────────────────────────────────────
-
     @Override
     @Transactional
     public void deleteAddress(Long addressId, Long userId) {
@@ -150,10 +138,6 @@ public class AddressServiceImpl implements AddressService{
         addressRepository.delete(address);
         log.info("Address ID: {} deleted for user: {}", addressId, userId);
     }
-
-    // ─────────────────────────────────────────────
-    // PRIVATE HELPERS
-    // ─────────────────────────────────────────────
 
     private UserEntity findUserByIdOrThrow(Long userId) {
         return userRepository.findById(userId)
