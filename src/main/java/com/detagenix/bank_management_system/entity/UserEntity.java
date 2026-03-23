@@ -5,6 +5,7 @@ import com.detagenix.bank_management_system.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -35,6 +36,9 @@ public class UserEntity extends BaseEntity {
 
     @Column(unique = true, length = 10)
     private String panNumber;
+    
+    @OneToOne(fetch = FetchType.LAZY,mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    private KycDocument kycDocument;
 
     @Column(unique = true, length = 12)
     private String aadhaarNumber;
