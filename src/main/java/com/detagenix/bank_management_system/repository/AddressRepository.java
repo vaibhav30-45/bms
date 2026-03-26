@@ -12,24 +12,16 @@ import java.util.Optional;
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Long> {
 
-    /**
-     * Find all addresses for a specific user
-     * A user can have multiple addresses (home, office, etc.)
-     */
+    
     List<Address> findByUserUserId(Long userId);
 
-    /**
-     * Find address by user and address type
-     * Example: Find user's PERMANENT or CURRENT address
-     */
+  
     Optional<Address> findByUserAndAddressType(UserEntity user, AddressType addressType);
 
     Optional<Address> findByUserUserIdAndAddressType(Long userId, AddressType addressType);
+    
+    boolean existsByUserUserIdAndAddressType(Long userId, AddressType addressType);
 
-    /**
-     * Find primary address (PERMANENT) for a user
-     * Useful shorthand for getting permanent address
-     */
     default Optional<Address> findPrimaryAddress(UserEntity user) {
         return findByUserAndAddressType(user, AddressType.PERMANENT);
     }

@@ -5,6 +5,7 @@ import com.detagenix.bank_management_system.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -27,6 +28,9 @@ public class UserEntity extends BaseEntity {
 
     @Column(unique = true, nullable = false)
     private String email;
+    
+    @OneToMany(mappedBy = "user",cascade = {CascadeType.PERSIST,CascadeType.MERGE},orphanRemoval = true,fetch = FetchType.LAZY)
+    private List<Address> addresses=new ArrayList<Address>();
 
     @Column(unique = true, nullable = false, length = 15)
     private String phoneNumber;
