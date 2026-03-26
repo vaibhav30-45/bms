@@ -40,6 +40,9 @@ public class UserEntity extends BaseEntity {
 
     @Column(unique = true, length = 10)
     private String panNumber;
+    
+    @OneToOne(fetch = FetchType.LAZY,mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    private KycDocument kycDocument;
 
     @Column(unique = true, length = 12)
     private String aadhaarNumber;
