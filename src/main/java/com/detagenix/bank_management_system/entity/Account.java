@@ -5,10 +5,13 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "accounts")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -20,6 +23,14 @@ public class Account extends BaseEntity {
 
     @Column(unique = true, nullable = false, length = 20)
     private String accountNumber;
+    
+ 
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Transaction> transactions = new ArrayList<>();
+
+   
+    @OneToMany(mappedBy = "targetAccount", fetch = FetchType.LAZY)
+    private List<Transaction> receivedTransactions = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_id", nullable = false)
@@ -42,12 +53,4 @@ public class Account extends BaseEntity {
     @Column(nullable = false, length = 50)
     private AccountStatus accountStatus;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-//    @PrePersist : already created
-    @PrePersist
-    protected void onCreateAccount() {
-        this.createdAt = LocalDateTime.now();
-    }
 }

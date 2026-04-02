@@ -20,6 +20,6 @@ public class AccountResponse {
 	    private BigDecimal minimumRequiredBalance;
 	    private Boolean isActive;
 	    private AccountStatus accountStatus;
-	    private LocalDateTime createdAt;
+	    private LocalDateTime createdOn;
 
 }

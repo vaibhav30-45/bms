@@ -19,18 +19,18 @@ public abstract class BaseEntity {
     private String updatedBy;
 
     @Column(name = "created_on", nullable = false, updatable = false)
-    private LocalDateTime createdOn;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_on")
-    private LocalDateTime updatedOn;
+    private LocalDateTime updatedAt;
 
     /**
      * Automatically set createdOn and updatedOn before persisting
      */
     @PrePersist
     protected void onCreate() {
-        this.createdOn = LocalDateTime.now();
-        this.updatedOn = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
         // TODO: Get from SecurityContext once JWT is implemented
         if (this.createdBy == null) {
             this.createdBy = "SYSTEM";
@@ -42,7 +42,7 @@ public abstract class BaseEntity {
      */
     @PreUpdate
     protected void onUpdate() {
-        this.updatedOn = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
         // TODO: Get from SecurityContext once JWT is implemented
         if (this.updatedBy == null) {
             this.updatedBy = "SYSTEM";
