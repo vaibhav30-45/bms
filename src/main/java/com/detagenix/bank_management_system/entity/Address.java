@@ -29,7 +29,6 @@ public class Address extends BaseEntity {
     @Column(nullable = false, length = 200)
     private String address;
 
-
     @Column(nullable = false, length = 100)
     private String city;
 

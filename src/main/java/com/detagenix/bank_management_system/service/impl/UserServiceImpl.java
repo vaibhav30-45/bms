@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService {
                 .pinCode(address.getPincode())
                 .userStatus(user.getUserStatus())
                 .isActiveUser(user.getIsActiveUser())
-                .registeredAt(user.getCreatedOn())
+                .registeredAt(user.getCreatedAt())
                 .build();
     }
 
@@ -118,8 +118,8 @@ public class UserServiceImpl implements UserService {
                 .age(user.getAge())
                 .userStatus(user.getUserStatus())
                 .isActiveUser(user.getIsActiveUser())
-                .registeredAt(user.getCreatedOn())
-                .address(address != null ? address.getAddress() : null)
+                .registeredAt(user.getCreatedAt())
+                .address(address != null ? address.getAddress(): null)
                 .city(address != null ? address.getCity() : null)
                 .state(address != null ? address.getState() : null)
                 .pinCode(address != null ? address.getPincode() : null)
@@ -258,7 +258,7 @@ public class UserServiceImpl implements UserService {
                 .pinCode(address.getPincode())
                 .userStatus(user.getUserStatus())
                 .isActiveUser(user.getIsActiveUser())
-                .registeredAt(user.getCreatedOn())
+                .registeredAt(user.getCreatedAt())
                 .message(Constants.SUCCESS_USER_REGISTERED)
                 .build();
     }

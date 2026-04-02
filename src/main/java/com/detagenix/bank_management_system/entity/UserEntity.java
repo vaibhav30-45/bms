@@ -25,6 +25,9 @@ public class UserEntity extends BaseEntity {
 
     @Column(nullable = false, length = 100)
     private String lastName;
+    
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Transaction> transactions = new ArrayList<>();
 
     @Column(unique = true, nullable = false)
     private String email;
