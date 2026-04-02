@@ -14,11 +14,9 @@ import lombok.NoArgsConstructor;
 public class AddressResponse {
 	private Long addressId;
     private Long userId;
-    private String addressLine1;
-    private String addressLine2;
+    private String address;
     private String city;
     private String state;
     private String pincode;
-    private AddressType addressType;
 
 }

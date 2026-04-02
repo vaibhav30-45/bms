@@ -18,12 +18,9 @@ import lombok.RequiredArgsConstructor;
 @Builder
 public class AddressRequest {
 	
-	    @NotBlank(message = "Address line 1 is required")
-	    @Size(max = 200, message = "Address line 1 must not exceed 200 characters")
-	    private String addressLine1;
-
-	    @Size(max = 200, message = "Address line 2 must not exceed 200 characters")
-	    private String addressLine2;
+	    @NotBlank(message = "Address  is required")
+	    @Size(max = 200, message = "Address  must not exceed 200 characters")
+	    private String address;
 
 	    @NotBlank(message = "City is required")
 	    @Size(max = 100, message = "City must not exceed 100 characters")
@@ -37,6 +34,4 @@ public class AddressRequest {
 	    @Pattern(regexp = "^[0-9]{6}$", message = "Pincode must be exactly 6 digits")
 	    private String pincode;
 
-	    @NotNull(message = "Address type is required")
-	    private AddressType addressType;
 }
