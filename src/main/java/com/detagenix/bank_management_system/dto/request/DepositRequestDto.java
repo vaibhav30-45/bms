@@ -20,7 +20,7 @@ import lombok.Setter;
 public class DepositRequestDto {
 
 	    @NotNull(message = "Account number is required")
-	    private Long accountId;
+	    private String accountNumber;
 	 
 	    @NotNull(message = "Deposit amount is required")
 	    @DecimalMin(value = "0.01", message = "Deposit amount must be greater than zero")

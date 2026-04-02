@@ -37,7 +37,7 @@ public class Transaction extends BaseEntity{
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long transactionId;
  
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -62,8 +62,6 @@ public class Transaction extends BaseEntity{
  
     @Column(nullable = false)
     private BigDecimal amount;
- 
-    private String transactionPin;
  
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "target_account_id")

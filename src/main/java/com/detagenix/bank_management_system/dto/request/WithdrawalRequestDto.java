@@ -22,17 +22,13 @@ import lombok.Setter;
 public class WithdrawalRequestDto {
 	
 	@NotNull(message = "Account number is required")
-    private Long accountId;
+    private String accountNumber;
  
     @NotNull(message = "Withdrawal amount is required")
     @DecimalMin(value = "0.01", message = "Withdrawal amount must be greater than zero")
     private BigDecimal amount;
  
     @NotNull(message = "Payment mode is required")
-    private PaymentMode paymentMode;
- 
-    @NotBlank(message = "Transaction PIN is required")
-    private String transactionPin;
- 
+    private PaymentMode paymentMode; 
 
 }

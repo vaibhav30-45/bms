@@ -20,10 +20,10 @@ import lombok.Setter;
 public class TransferRequestDto {
 	
 	@NotNull(message = "Sender account number is required")
-    private Long senderAccountId;
+    private String senderAccountNumber;
  
     @NotNull(message = "Receiver account number is required")
-    private Long receiverAccountId;
+    private String receiverAccountNumber;
  
     @NotNull(message = "Transfer amount is required")
     @DecimalMin(value = "0.01", message = "Transfer amount must be greater than zero")
