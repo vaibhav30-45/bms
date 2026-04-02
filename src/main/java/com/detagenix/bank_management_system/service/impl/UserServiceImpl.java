@@ -78,8 +78,10 @@ public class UserServiceImpl implements UserService {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        Address address = addressRepository.findByUserAndAddressType(user, AddressType.PERMANENT)
-                .orElseThrow(() -> new ResourceNotFoundException("Permanent address not found "));
+        Address address = addressRepository.findByUserUserId(userId)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Address not found"));
 
         return UserProfileResponse.builder()
                 .userId(user.getUserId())
@@ -89,7 +91,7 @@ public class UserServiceImpl implements UserService {
                 .phoneNumber(user.getPhoneNumber())
                 .dateOfBirth(user.getDateOfBirth())
                 .age(user.getAge())
-                .address(address.getAddressLine1())
+                .address(address.getAddress())
                 .city(address.getCity())
                 .state(address.getState())
                 .pinCode(address.getPincode())
@@ -101,7 +103,9 @@ public class UserServiceImpl implements UserService {
 
     private UserProfileResponse mapToUserProfileResponse(UserEntity user) {
 
-        Address address = addressRepository.findByUserUserIdAndAddressType(user.getUserId(), AddressType.PERMANENT)
+        Address address = addressRepository.findByUserUserId(user.getUserId())
+                .stream()
+                .findFirst()
                 .orElse(null);
 
         return UserProfileResponse.builder()
@@ -115,7 +119,7 @@ public class UserServiceImpl implements UserService {
                 .userStatus(user.getUserStatus())
                 .isActiveUser(user.getIsActiveUser())
                 .registeredAt(user.getCreatedAt())
-                .address(address != null ? address.getAddressLine1(): null)
+                .address(address != null ? address.getAddress(): null)
                 .city(address != null ? address.getCity() : null)
                 .state(address != null ? address.getState() : null)
                 .pinCode(address != null ? address.getPincode() : null)
@@ -126,10 +130,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserProfileResponse updateUserProfile(Long userId, UpdateProfileRequest request) {
 
-        //Fetch user first name and last name
         UserEntity userInDb = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
 
         if (request.getFirstName() != null && !request.getFirstName().isBlank()) {
             userInDb.setFirstName(request.getFirstName());
@@ -138,32 +140,31 @@ public class UserServiceImpl implements UserService {
             userInDb.setLastName(request.getLastName());
         }
 
-        //Check if address update requested
-        boolean addressUpdateRequested = request.getAddress() != null && !request.getAddress().isBlank()||
-                request.getCity() != null && !request.getCity().isBlank()||
-                request.getState() != null && !request.getState().isBlank()||
+        boolean addressUpdateRequested = request.getAddress() != null && !request.getAddress().isBlank() ||
+                request.getCity() != null && !request.getCity().isBlank() ||
+                request.getState() != null && !request.getState().isBlank() ||
                 request.getPinCode() != null && !request.getPinCode().isBlank();
 
-        //Fetch user address
         if (addressUpdateRequested) {
-            Address address = addressRepository.findByUserUserIdAndAddressType(userInDb.getUserId(), AddressType.PERMANENT)
-                    .orElseThrow(() -> new ResourceNotFoundException("Permanent address not found"));
+            Address address = addressRepository.findByUserUserId(userInDb.getUserId())
+                    .stream()
+                    .findFirst()
+                    .orElseThrow(() -> new ResourceNotFoundException("Address not found"));
 
             if (request.getAddress() != null) {
-                address.setAddressLine1(request.getAddress());
+                address.setAddress(request.getAddress());
             }
-
             if (request.getCity() != null) {
                 address.setCity(request.getCity());
             }
-
             if (request.getState() != null) {
                 address.setState(request.getState());
             }
-
             if (request.getPinCode() != null) {
                 address.setPincode(request.getPinCode());
             }
+
+            addressRepository.save(address);
         }
 
         return mapToUserProfileResponse(userInDb);
@@ -232,12 +233,10 @@ public class UserServiceImpl implements UserService {
 
         return Address.builder()
                 .user(user)
-                .addressLine1(request.getAddress())
-                .addressLine2(null) // Optional - can be added later
+                .address(request.getAddress())// Optional - can be added later
                 .city(request.getCity())
                 .state(request.getState())
                 .pincode(request.getPinCode())
-                .addressType(AddressType.PERMANENT) // Default address type
                 .build();
     }
 
@@ -253,7 +252,7 @@ public class UserServiceImpl implements UserService {
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
                 .dateOfBirth(user.getDateOfBirth())
-                .address(address.getAddressLine1())
+                .address(address.getAddress())
                 .city(address.getCity())
                 .state(address.getState())
                 .pinCode(address.getPincode())

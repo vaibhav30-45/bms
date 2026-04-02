@@ -32,17 +32,18 @@ public class AddressServiceImpl implements AddressService{
     private final UserRepository userRepository;
     private final AddressMapper addressMapper;
     
+    
+	
     @Override
     @Transactional
     public AddressResponse createAddress(AddressRequest request, Long userId) {
 
         UserEntity user = findUserByIdOrThrow(userId);
 
-        // Prevent duplicate address type for same user
-        if (addressRepository.existsByUserUserIdAndAddressType(userId, request.getAddressType())) {
+        // Prevent duplicate address for same user
+        if (addressRepository.existsByUserUserId(userId)) {
             throw new DuplicateResourceException(
-                "Address of type '" + request.getAddressType() +
-                "' already exists for this user. Please update the existing one."
+                "Address already exists for this user. Please update the existing one."
             );
         }
 
@@ -87,38 +88,11 @@ public class AddressServiceImpl implements AddressService{
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public AddressResponse getAddressByType(AddressType addressType, Long userId) {
-
-        findUserByIdOrThrow(userId);
-
-        Address address = addressRepository
-                .findByUserUserIdAndAddressType(userId, addressType)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                    "No address of type '" + addressType + "' found for user with ID: " + userId
-                ));
-
-        return addressMapper.toResponse(address);
-    }
-
-    @Override
     @Transactional
     public AddressResponse updateAddress(Long addressId, AddressUpdateRequest request, Long userId) {
 
         Address address = findAddressByIdOrThrow(addressId);
         verifyOwnership(address, userId);
-
-        // If address type is being changed check no duplicate exists
-        if (request.getAddressType() != null &&
-            !request.getAddressType().equals(address.getAddressType())) {
-
-            if (addressRepository.existsByUserUserIdAndAddressType(userId, request.getAddressType())) {
-                throw new DuplicateResourceException(
-                    "Address of type '" + request.getAddressType() +
-                    "' already exists. Cannot change to this type."
-                );
-            }
-        }
 
         addressMapper.updateEntityFromDto(request, address);
 
@@ -138,6 +112,8 @@ public class AddressServiceImpl implements AddressService{
         addressRepository.delete(address);
         log.info("Address ID: {} deleted for user: {}", addressId, userId);
     }
+
+    // ─── Private Helpers ────────────────────────────────────────────────────────
 
     private UserEntity findUserByIdOrThrow(Long userId) {
         return userRepository.findById(userId)

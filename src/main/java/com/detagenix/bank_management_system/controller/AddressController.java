@@ -75,19 +75,6 @@ public class AddressController {
                 .body(ApiResponse.success(response));
     }
 
-    @GetMapping("/type")
-    public ResponseEntity<ApiResponse<AddressResponse>> getAddressByType(
-            @RequestParam AddressType addressType) {
-
-        Long userId = getAuthenticatedUserId();
-        AddressResponse response = addressService.getAddressByType(addressType, userId);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ApiResponse.success(response));
-    }
-
-
     @PutMapping("/{addressId}")
     public ResponseEntity<ApiResponse<AddressResponse>> updateAddress(
             @PathVariable Long addressId,
@@ -101,16 +88,4 @@ public class AddressController {
                 .body(ApiResponse.success("Address updated successfully", response));
     }
 
-
-    @DeleteMapping("/{addressId}")
-    public ResponseEntity<ApiResponse<Void>> deleteAddress(
-            @PathVariable Long addressId) {
-
-        Long userId = getAuthenticatedUserId();
-        addressService.deleteAddress(addressId, userId);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ApiResponse.success("Address deleted successfully", null));
-    }
 }

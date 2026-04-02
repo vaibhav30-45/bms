@@ -27,10 +27,8 @@ public class Address extends BaseEntity {
     private UserEntity user;
 
     @Column(nullable = false, length = 200)
-    private String addressLine1;
+    private String address;
 
-    @Column(length = 200)
-    private String addressLine2;
 
     @Column(nullable = false, length = 100)
     private String city;
@@ -41,7 +39,4 @@ public class Address extends BaseEntity {
     @Column(nullable = false, length = 6)
     private String pincode;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "address_type",length = 50)
-    private AddressType addressType;  // PERMANENT, CURRENT
 }
