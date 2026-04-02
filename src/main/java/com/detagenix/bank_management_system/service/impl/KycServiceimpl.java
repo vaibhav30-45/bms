@@ -62,7 +62,7 @@ public class KycServiceimpl implements KycService{
 		
 		log.info("Cancelling KYC for userId: {}", userId);
 		
-		userRepository.findById(userId)
+		UserEntity user =	userRepository.findById(userId)
         .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
          
@@ -75,6 +75,8 @@ public class KycServiceimpl implements KycService{
              );
          }
          
+         user.setKycDocument(null);
+         userRepository.saveAndFlush(user);
         kycRepository.delete(kyc);
        
         log.info("KYC cancelled successfully for userId: {}", userId);
@@ -90,10 +92,10 @@ public class KycServiceimpl implements KycService{
 		    userRepository.findById(userId)
 		            .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
-		    KycDocument kyc = kycRepository.findByUser_UserId(userId)
-		            .orElseThrow(() -> new ResourceNotFoundException("No KYC found for userId: " + userId));
 
-		    return kycMapper.toResponseDto(kyc);
+		    return kycRepository.findByUser_UserId(userId)
+		            .map(kycMapper::toResponseDto)
+		            .orElse(null);
 	}
 
 }

@@ -11,18 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Long> {
-
-    
+	
     List<Address> findByUserUserId(Long userId);
-
-  
-    Optional<Address> findByUserAndAddressType(UserEntity user, AddressType addressType);
-
-    Optional<Address> findByUserUserIdAndAddressType(Long userId, AddressType addressType);
-    
-    boolean existsByUserUserIdAndAddressType(Long userId, AddressType addressType);
-
-    default Optional<Address> findPrimaryAddress(UserEntity user) {
-        return findByUserAndAddressType(user, AddressType.PERMANENT);
-    }
+	boolean existsByUserUserId(Long userId);
 }

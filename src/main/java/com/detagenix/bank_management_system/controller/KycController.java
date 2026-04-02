@@ -49,6 +49,12 @@ public class KycController {
 	    public ResponseEntity<ApiResponse<KycResponseDto>> getKycStatus() {
 	        Long userId = getAuthenticatedUserId();
 	        KycResponseDto response = kycService.getKycByUserId(userId);
+	        
+	        if (response == null) {
+	            return ResponseEntity
+	                    .status(HttpStatus.OK)
+	                    .body(ApiResponse.success("No KYC found. Please submit your KYC.", null));
+	        }
 	        return ResponseEntity
 	                .status(HttpStatus.OK)
 	                .body(ApiResponse.success(response));
