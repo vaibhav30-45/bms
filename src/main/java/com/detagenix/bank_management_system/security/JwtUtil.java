@@ -1,6 +1,7 @@
 package com.detagenix.bank_management_system.security;
 
 import io.jsonwebtoken.*;
+
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,7 +11,6 @@ import java.security.Key;
 import java.util.Date;
 
 @Component
-@Getter
 public class JwtUtil { //This class generate tokens
 
     private final String secretKey;

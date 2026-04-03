@@ -22,13 +22,4 @@ public interface UserService {
      */
     UserRegistrationResponse registerUser(UserRegistrationRequest request);
 
-    // Future methods (Phase 2 and beyond):
-    // UserLoginResponse loginUser(UserLoginRequest request);
-    // UserDetailsResponse getUserById(Long userId);
-    // UserDetailsResponse updateUser(Long userId, UpdateUserRequest request);
-    // void deleteUser(Long userId);
-
-    UserProfileResponse getUserProfile(Long userId);
-
-    UserProfileResponse updateUserProfile(Long userId, UpdateProfileRequest request);
 }
