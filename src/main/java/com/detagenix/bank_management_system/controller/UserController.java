@@ -33,14 +33,7 @@ public class UserController {
 
     private final UserService userService;
 
-    /**
-     * Register a new user
-     *
-     * POST /api/users/register
-     *
-     * @param request User registration details
-     * @return Success response with user details
-     */
+  
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<UserRegistrationResponse>> registerUser(
             @Valid @RequestBody UserRegistrationRequest request) {
@@ -54,46 +47,6 @@ public class UserController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.success("User registered successfully", response));
-    }
-
-    /**
-     * Health check endpoint
-     * GET /api/users/health
-     */
-    @GetMapping("/health")
-    public ResponseEntity<ApiResponse<String>> healthCheck() {
-        return ResponseEntity.ok(
-                ApiResponse.success("User service is running", "OK")
-        );
-    }
-
-    @GetMapping("/profile/{userId}")
-    public ResponseEntity<ApiResponse<UserProfileResponse>> getProfile(
-            @PathVariable Long userId
-    ) {
-        UserProfileResponse profile = userService.getUserProfile(userId);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ApiResponse.success("User profile retrieved successfully", profile));
-    }
-
-    @PutMapping("/profile")
-    public ResponseEntity<ApiResponse<UserProfileResponse>> updateProfile(
-            Authentication authentication,
-            @Valid @RequestBody UpdateProfileRequest request
-    ) {
-
-        Long userId = (Long) authentication.getPrincipal();
-
-        log.info("Received update request for user ID: {}", userId);
-
-        UserProfileResponse response = userService.updateUserProfile(userId, request);
-
-        log.info("Profile updated successfully for userId: {}", userId);
-
-        return ResponseEntity.ok(
-                ApiResponse.success("Profile updated successfully", response));
-    }
+    }    
 
 }

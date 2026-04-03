@@ -32,7 +32,7 @@ public class AuthServiceImpl implements AuthService {
     private long jwtExpirationInMs;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public LoginResponse login(LoginRequest request) {
 
         log.info("Login attempt for email: {}", request.getEmail());
