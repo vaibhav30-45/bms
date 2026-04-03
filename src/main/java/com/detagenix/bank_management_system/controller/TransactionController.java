@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.detagenix.bank_management_system.dto.request.AccountStatementRequestDto;
 import com.detagenix.bank_management_system.dto.request.DepositRequestDto;
 import com.detagenix.bank_management_system.dto.request.TransferRequestDto;
 import com.detagenix.bank_management_system.dto.request.WithdrawalRequestDto;
+import com.detagenix.bank_management_system.dto.response.AccountStatementResponseDto;
 import com.detagenix.bank_management_system.dto.response.AccountVerifyResponseDto;
 import com.detagenix.bank_management_system.dto.response.ApiResponse;
 import com.detagenix.bank_management_system.dto.response.DepositResponseDto;
@@ -69,6 +71,15 @@ public class TransactionController {
         log.info("GET /api/v1/transactions/verify-account requested for accountNumber: {}", accountNumber);
         AccountVerifyResponseDto response = transactionService.verifyAccount(accountNumber);
         return ResponseEntity.ok(ApiResponse.success("Account verified", response));
+    }
+    
+    @PostMapping("/statement")
+    public ResponseEntity<ApiResponse<AccountStatementResponseDto>> getAccountStatement(
+            @RequestBody @Valid AccountStatementRequestDto request) {
+        Long userId = getAuthenticatedUserId();
+        log.info("POST /api/v1/transactions/statement requested by userId: {}", userId);
+        AccountStatementResponseDto response = transactionService.getAccountStatement(request, userId);
+        return ResponseEntity.ok(ApiResponse.success("Account statement fetched successfully", response));
     }
 
 }

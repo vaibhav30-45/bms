@@ -1,15 +1,20 @@
 package com.detagenix.bank_management_system.service.impl;
 
 import java.math.BigDecimal;
+import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.detagenix.bank_management_system.Mappper.MapStruct.TransactionMapper;
+import com.detagenix.bank_management_system.dto.request.AccountStatementRequestDto;
 import com.detagenix.bank_management_system.dto.request.DepositRequestDto;
 import com.detagenix.bank_management_system.dto.request.TransferRequestDto;
 import com.detagenix.bank_management_system.dto.request.WithdrawalRequestDto;
+import com.detagenix.bank_management_system.dto.response.AccountStatementResponseDto;
+import com.detagenix.bank_management_system.dto.response.AccountStatementResponseDto.TransactionLineItem;
 import com.detagenix.bank_management_system.dto.response.AccountVerifyResponseDto;
 import com.detagenix.bank_management_system.dto.response.DepositResponseDto;
 import com.detagenix.bank_management_system.dto.response.TransferResponseDto;
@@ -65,6 +70,7 @@ public class TransactionServiceImpl implements TransactionService{
                 .paymentMode(request.getPaymentMode())
                 .amount(request.getAmount())
                 .status(TransactionStatus.SUCCESS)
+                .balanceAfter(newBalance)
                 .build();
 
         Transaction savedTransaction =   transactionRepository.save(transaction);
@@ -104,6 +110,7 @@ public class TransactionServiceImpl implements TransactionService{
                 .paymentMode(request.getPaymentMode())
                 .amount(request.getAmount())
                 .status(TransactionStatus.SUCCESS)
+                .balanceAfter(balanceAfterWithdrawal)
                 .build();
 
         transactionRepository.save(transaction);
@@ -163,6 +170,7 @@ public class TransactionServiceImpl implements TransactionService{
                 .paymentMode(request.getPaymentMode())
                 .amount(request.getAmount())
                 .status(TransactionStatus.SUCCESS)
+                .balanceAfter(senderBalanceAfterTransfer)
                 .build();
 
         transactionRepository.save(transaction);
@@ -197,6 +205,53 @@ public class TransactionServiceImpl implements TransactionService{
                 .exists(true)
                 .build();
     }
+
+	@Override
+	public AccountStatementResponseDto getAccountStatement(AccountStatementRequestDto request, Long userId) {
+		Account account = accountRepository.findByAccountNumber(request.getAccountNumber())
+	            .orElseThrow(() -> new ResourceNotFoundException("Account not found"));
+
+	    if (!account.getUser().getUserId().equals(userId)) {
+	        throw new UnauthorizedException("You don't own this account");
+	    }
+	    
+	    List<Transaction> transactions;
+
+	    if (request.getTransactionType() != null) {
+	        transactions = transactionRepository
+	            .findByAccount_AccountNumberAndCreatedAtBetweenAndTransactionType(
+	                request.getAccountNumber(),
+	                request.getFromDate().atStartOfDay(),
+	                request.getToDate().atTime(LocalTime.MAX),
+	                request.getTransactionType()
+	            );
+	    } else {
+	        transactions = transactionRepository
+	            .findByAccount_AccountNumberAndCreatedAtBetween(
+	                request.getAccountNumber(),
+	                request.getFromDate().atStartOfDay(),
+	                request.getToDate().atTime(LocalTime.MAX)
+	            );
+	    }
+	    
+	    List<TransactionLineItem> lineItems = transactions.stream()
+	            .map(tx -> TransactionLineItem.builder()
+	                    .date(tx.getCreatedAt())
+	                    .transactionId(tx.getTransactionId())
+	                    .type(tx.getTransactionType())
+	                    .paymentMode(tx.getPaymentMode())
+	                    .amount(tx.getAmount())
+	                    .status(tx.getStatus())
+	                    .balanceAfter(tx.getBalanceAfter())
+	                    .build())
+	            .toList();
+
+	    return AccountStatementResponseDto.builder()
+	            .fromDate(request.getFromDate())
+	            .toDate(request.getToDate())
+	            .transactions(lineItems)
+	            .build();
+	}
 
 
 }

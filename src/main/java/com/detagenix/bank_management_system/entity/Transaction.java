@@ -66,5 +66,8 @@ public class Transaction extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "target_account_id")
     private Account targetAccount;
+    
+    @Column(nullable = false, precision = 19, scale = 4)
+    private BigDecimal balanceAfter;
 	
 }
