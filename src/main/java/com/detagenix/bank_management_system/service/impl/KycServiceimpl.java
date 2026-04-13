@@ -52,10 +52,13 @@ public class KycServiceimpl implements KycService {
         KycDocument kyc = kycMapper.toEntity(kycRequestDto);
         kyc.setUser(user);
 
-        // ✅ Required fields (VERY IMPORTANT)
+    
         kyc.setKycStatus(KycStatus.SUBMITTED);
         kyc.setDocumentStatus(KycStatus.SUBMITTED);
+
+    
         kyc.setDocumentType("AADHAR");
+
         KycDocument savedKyc = kycRepository.save(kyc);
 
         log.info("KYC submitted successfully with id: {}", savedKyc.getKycId());
@@ -125,8 +128,6 @@ public class KycServiceimpl implements KycService {
                 .orElseThrow(() -> new ResourceNotFoundException("KYC not found with id: " + kycId));
 
         kyc.setKycStatus(KycStatus.VERIFIED);
-        kyc.setDocumentStatus(KycStatus.VERIFIED);
-
         kycRepository.save(kyc);
 
         return "KYC Approved Successfully";
@@ -142,8 +143,6 @@ public class KycServiceimpl implements KycService {
                 .orElseThrow(() -> new ResourceNotFoundException("KYC not found with id: " + kycId));
 
         kyc.setKycStatus(KycStatus.REJECTED);
-        kyc.setDocumentStatus(KycStatus.REJECTED);
-
         kycRepository.save(kyc);
 
         return "KYC Rejected Successfully";
