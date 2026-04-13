@@ -63,7 +63,7 @@ public class AuthServiceImpl implements AuthService {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
-                .role(user.getRole())
+                .role(user.getRole().name())
                 .expiresIn(jwtExpirationInMs / 1000)
                 .build();
     }
