@@ -32,7 +32,7 @@ public class AuthServiceImpl implements AuthService {
     private long jwtExpirationInMs;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public LoginResponse login(LoginRequest request) {
 
         log.info("Login attempt for email: {}", request.getEmail());
@@ -63,7 +63,7 @@ public class AuthServiceImpl implements AuthService {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
-                .role(user.getRole())
+                .role(user.getRole().name())
                 .expiresIn(jwtExpirationInMs / 1000)
                 .build();
     }

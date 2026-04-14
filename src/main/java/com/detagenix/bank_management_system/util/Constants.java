@@ -43,6 +43,9 @@ public class Constants {
     public static final String MSG_PINCODE_REQUIRED = "PIN code is required";
     public static final String MSG_PAN_REQUIRED = "PAN number is required";
     public static final String MSG_AADHAAR_REQUIRED = "Aadhaar number is required";
+    public static final String MSG_EMAIL_ALREADY_EXISTS = "Email already exists";
+    public static final String MSG_PHONE_ALREADY_EXISTS = "Phone number already exists";
+    public static final String MSG_REGISTRATION_SUCCESS = "User registration successful";
 
     // ============ VALIDATION MESSAGES - FORMAT ERRORS ============
     public static final String MSG_NAME_INVALID = "Name should contain only letters";

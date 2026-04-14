@@ -1,8 +1,11 @@
 package com.detagenix.bank_management_system.security;
 
 import com.detagenix.bank_management_system.entity.UserEntity;
+
 import com.detagenix.bank_management_system.repository.UserRepository;
-import jakarta.validation.constraints.NotNull;
+
+import org.antlr.v4.runtime.misc.NotNull;
+import org.jspecify.annotations.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;

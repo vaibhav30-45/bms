@@ -1,6 +1,9 @@
 package com.detagenix.bank_management_system.entity;
 
+import java.time.LocalDateTime;
+
 import com.detagenix.bank_management_system.enums.KycStatus;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,7 +11,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "kyc_documents")
+@Table(name = "kyc_documents",
+         uniqueConstraints= {
+        		 @UniqueConstraint(name="uk_aadhar",columnNames = "aadharNumber"),
+        		 @UniqueConstraint(name="uk_pan",columnNames = "panNumber")
+         },
+         indexes= {
+        		 @Index(name="idx_user_id",columnList = "user_id"),
+        		 @Index(name = "idx_kyc_status", columnList = "kycStatus"),
+        		 @Index(name = "idx_aadhar", columnList = "aadharNumber"),
+        		 @Index(name = "idx_pan", columnList = "panNumber")
+         }
+)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,33 +31,36 @@ public class KycDocument extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long documentId;
+    private Long kycId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity documentUser;
-
-    @Column(nullable = false, length = 50)
-    private String documentType;
-
-    @Column(length = 500)
-    private String documentDescription;
-
-    @Column(length = 50)
-    private String documentCategory;
+    private UserEntity user;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
+    private KycStatus kycStatus = KycStatus.PENDING;
+
+    // ✅ FIX 1
+    @Enumerated(EnumType.STRING)
+    @Column(name = "document_status", nullable = false)
     private KycStatus documentStatus;
 
-    @Column(length = 50)
-    private String documentNumber;
+    // ✅ FIX 2 (NEW FIELD)
+    @Column(name = "document_type", nullable = false)
+    private String documentType;
+
+    @Column(length = 12)
+    private String aadharNumber;
+    
+    @Column(length = 10)
+    private String panNumber;
 
     @Column(nullable = false, length = 500)
     private String documentPath;
-
-    // Remove these methods - they belong in a Service class, not Entity
-    // public String uploadDocument() { return ""; }
-    // public String verifyDocument() { return ""; }
-    // public String rejectDocument() { return ""; }
+    
+    private LocalDateTime verifiedAt;
+    
+    @Column(length = 500)
+    private String rejectionReason;
 }

@@ -17,18 +17,26 @@ public class CustomUserDetails implements UserDetails {
         this.user = user;
     }
 
-    public UserEntity getUser(){
+    // ================= CUSTOM METHODS =================
+
+    public UserEntity getUser() {
         return user;
     }
 
-    public Long getUserId() {return user.getUserId();}
+    public Long getUserId() {
+        return user.getUserId();
+    }
 
-    public String getEmail() {return user.getEmail();}
+    public String getEmail() {
+        return user.getEmail();
+    }
+
+    // ================= SECURITY METHODS =================
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(
-                new SimpleGrantedAuthority("ROLE_" + user.getRole())
+                new SimpleGrantedAuthority(user.getRole().name()) // ✅ FIXED
         );
     }
 

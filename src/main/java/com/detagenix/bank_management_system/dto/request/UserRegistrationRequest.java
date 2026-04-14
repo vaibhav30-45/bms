@@ -54,32 +54,4 @@ public class UserRegistrationRequest {
             message = Constants.MSG_PASSWORD_INVALID)
     private String password;
 
-    @NotBlank(message = Constants.MSG_ADDRESS_REQUIRED)
-    @Size(min = Constants.ADDRESS_MIN_LENGTH,
-            max = Constants.ADDRESS_MAX_LENGTH,
-            message = Constants.MSG_ADDRESS_SIZE)
-    private String address;
-
-    @NotBlank(message = Constants.MSG_CITY_REQUIRED)
-    @Size(min = Constants.CITY_MIN_LENGTH,
-            max = Constants.CITY_MAX_LENGTH,
-            message = Constants.MSG_CITY_SIZE)
-    private String city;
-
-    @NotBlank(message = Constants.MSG_STATE_REQUIRED)
-    @Size(min = Constants.STATE_MIN_LENGTH,
-            max = Constants.STATE_MAX_LENGTH,
-            message = Constants.MSG_STATE_SIZE)
-    private String state;
-
-    @NotBlank(message = Constants.MSG_PINCODE_REQUIRED)
-    @Pattern(regexp = Constants.PATTERN_PINCODE,
-            message = Constants.MSG_PINCODE_INVALID)
-    private String pinCode;
-
-    //Normalized email: convert email to lowercase before storing in db for consistency
-    public void setEmail(String email){
-        this.email = email == null ? null : email.trim().toLowerCase();
-    }
-
 }
