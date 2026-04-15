@@ -5,22 +5,15 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 import com.detagenix.bank_management_system.dto.request.AddressRequest;
 import com.detagenix.bank_management_system.dto.request.AddressUpdateRequest;
 import com.detagenix.bank_management_system.dto.response.AddressResponse;
 import com.detagenix.bank_management_system.dto.response.ApiResponse;
-import com.detagenix.bank_management_system.enums.AddressType;
 import com.detagenix.bank_management_system.service.AddressService;
+import com.detagenix.bank_management_system.security.CustomUserDetails;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,14 +25,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AddressController {
 
-	private final AddressService addressService;
-	
-	private Long getAuthenticatedUserId() {
-        return (Long) SecurityContextHolder.getContext()
-                .getAuthentication().getPrincipal();
+    private final AddressService addressService;
+
+    // ✅ FIXED METHOD
+    private Long getAuthenticatedUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        return userDetails.getUser().getUserId(); // ✅ FINAL FIX
     }
-	
-	@PostMapping
+
+    @PostMapping
     public ResponseEntity<ApiResponse<AddressResponse>> createAddress(
             @Valid @RequestBody AddressRequest request) {
 
@@ -50,7 +45,6 @@ public class AddressController {
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Address created successfully", response));
     }
-
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<AddressResponse>>> getMyAddresses() {
@@ -87,5 +81,4 @@ public class AddressController {
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success("Address updated successfully", response));
     }
-
 }
