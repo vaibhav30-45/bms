@@ -1,9 +1,11 @@
 package com.detagenix.bank_management_system.entity;
 
 import com.detagenix.bank_management_system.enums.Gender;
+import com.detagenix.bank_management_system.enums.Role;
 import com.detagenix.bank_management_system.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,15 +27,20 @@ public class UserEntity extends BaseEntity {
 
     @Column(nullable = false, length = 100)
     private String lastName;
-    
+
+    // ================= TRANSACTIONS =================
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Transaction> transactions = new ArrayList<>();
 
+    // ================= BASIC DETAILS =================
     @Column(unique = true, nullable = false)
     private String email;
-    
-    @OneToMany(mappedBy = "user",cascade = {CascadeType.PERSIST,CascadeType.MERGE},orphanRemoval = true,fetch = FetchType.LAZY)
-    private List<Address> addresses=new ArrayList<Address>();
+
+    @OneToMany(mappedBy = "user",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    private List<Address> addresses = new ArrayList<>();
 
     @Column(unique = true, nullable = false, length = 15)
     private String phoneNumber;
@@ -43,8 +50,12 @@ public class UserEntity extends BaseEntity {
 
     @Column(unique = true, length = 10)
     private String panNumber;
-    
-    @OneToOne(fetch = FetchType.LAZY,mappedBy = "user",cascade = CascadeType.REMOVE,orphanRemoval = true)
+
+    // ================= KYC =================
+    @OneToOne(fetch = FetchType.LAZY,
+            mappedBy = "user",
+            cascade = CascadeType.REMOVE,
+            orphanRemoval = true)
     private KycDocument kycDocument;
 
     @Column(unique = true, length = 12)
@@ -65,15 +76,19 @@ public class UserEntity extends BaseEntity {
 
     private String guardianName;
 
+    // ================= ACCOUNT STATUS =================
     @Column(nullable = false)
     private Boolean isActiveUser = true;
 
     @Column(nullable = false)
     private Integer failedLoginAttempts = 0;
 
-    @Column(length = 50)
-    private String role;
+    // ================= ROLE (UPDATED) =================
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Role role;
 
+    // ================= USER STATUS =================
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
     private UserStatus userStatus = UserStatus.REGISTERED;

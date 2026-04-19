@@ -8,6 +8,7 @@ import com.detagenix.bank_management_system.Mappper.MapStruct.UserMapper;
 import com.detagenix.bank_management_system.dto.request.UserRegistrationRequest;
 import com.detagenix.bank_management_system.dto.response.UserRegistrationResponse;
 import com.detagenix.bank_management_system.entity.UserEntity;
+import com.detagenix.bank_management_system.enums.Role; // ✅ ADD THIS
 import com.detagenix.bank_management_system.exception.DuplicateResourceException;
 import com.detagenix.bank_management_system.repository.UserRepository;
 import com.detagenix.bank_management_system.service.UserService;
@@ -21,11 +22,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
-	private final UserRepository userRepository;
-	private final PasswordEncoder passwordEncoder;
-	private final UserMapper userMapper;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
-	@Override
+    @Override
     @Transactional
     public UserRegistrationResponse registerUser(UserRegistrationRequest request) {
 
@@ -44,8 +45,12 @@ public class UserServiceImpl implements UserService {
         }
 
         UserEntity user = userMapper.toEntity(request);
+
         user.setEmail(normalizedEmail);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        //for role
+        user.setRole(Role.ROLE_CUSTOMER);
 
         UserEntity savedUser = userRepository.save(user);
 
@@ -56,5 +61,4 @@ public class UserServiceImpl implements UserService {
 
         return response;
     }
-
 }
