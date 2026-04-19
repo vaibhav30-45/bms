@@ -34,10 +34,9 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class AccountServiceImpl implements AccountService{
-	
-	
-	private final AccountRepository accountRepository;
+public class AccountServiceImpl implements AccountService {
+
+    private final AccountRepository accountRepository;
     private final SavingsAccountRepository savingsAccountRepository;
     private final CurrentAccountRepository currentAccountRepository;
     private final UserRepository userRepository;
@@ -45,23 +44,20 @@ public class AccountServiceImpl implements AccountService{
     private final AccountNumberGenerator accountNumberGenerator;
     private final AccountMapper accountMapper;
 
-	@Override
-	@Transactional
-	public SavingsAccountResponse createSavingsAccount(SavingsAccountRequest request, Long userId) {
-		
-		UserEntity user = userRepository.findById(userId)
+    @Override
+    @Transactional
+    public SavingsAccountResponse createSavingsAccount(SavingsAccountRequest request, Long userId) {
+
+        UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(Constants.ERROR_USER_NOT_FOUND));
-		
-		Branch branch = branchRepository.findById(request.getBranchId())
+
+        Branch branch = branchRepository.findById(request.getBranchId())
                 .orElseThrow(() -> new ResourceNotFoundException(Constants.ERROR_BRANCH_NOT_FOUND));
-		
-		List<SavingsAccount> existing = savingsAccountRepository.findByUser_UserId(userId);
-        if (!existing.isEmpty()) {
-            throw new DuplicateResourceException("User already has a savings account");
-        }
-		
+
+        // ✅ REMOVED restriction → now multiple savings accounts allowed
+
         SavingsAccount savingsAccount = new SavingsAccount();
-        
+
         savingsAccount.setUser(user);
         savingsAccount.setBranch(branch);
         savingsAccount.setAccountNumber(accountNumberGenerator.generateAccountNumber());
@@ -69,72 +65,63 @@ public class AccountServiceImpl implements AccountService{
         savingsAccount.setMinimumRequiredBalance(new BigDecimal(Constants.DEFAULT_SAVINGS_MIN_BALANCE));
         savingsAccount.setIsActive(true);
         savingsAccount.setAccountStatus(AccountStatus.ACTIVE);
-        
+
         savingsAccount.setInterestRate(Double.parseDouble(Constants.DEFAULT_SAVINGS_INTEREST_RATE));
         savingsAccount.setWithdrawalLimit(new BigDecimal(Constants.DEFAULT_SAVINGS_WITHDRAWAL_LIMIT));
         savingsAccount.setDailyTxnLimit(new BigDecimal(Constants.DEFAULT_SAVINGS_DAILY_TXN_LIMIT));
         savingsAccount.setMaxWithdrawals(Constants.MAX_WITHDRAWALS_PER_MONTH);
         savingsAccount.setLastInterestDate(null);
-        
-        
+
         SavingsAccount saved = savingsAccountRepository.save(savingsAccount);
-        
-		
-		return accountMapper.toSavingsAccountResponse(saved);
-	}
 
-	@Override
-	@Transactional
-	public CurrentAccountResponse createCurrentAccount(CurrentAccountRequest request, Long userId) {
-		
-		 UserEntity user = userRepository.findById(userId)
-	                .orElseThrow(() -> new ResourceNotFoundException(Constants.ERROR_USER_NOT_FOUND));
-		 
-		 Branch branch = branchRepository.findById(request.getBranchId())
-	                .orElseThrow(() -> new ResourceNotFoundException(Constants.ERROR_BRANCH_NOT_FOUND));
-		 
-		 List<CurrentAccount> existing = currentAccountRepository.findByUser_UserId(userId);
-	        if (!existing.isEmpty()) {
-	            throw new DuplicateResourceException("User already has a current account");
-	        }
+        return accountMapper.toSavingsAccountResponse(saved);
+    }
 
-	        if (request.getGstNumber() != null && !request.getGstNumber().isBlank()) {
-	            currentAccountRepository.findByGstNumber(request.getGstNumber())
-	                    .ifPresent(a -> {
-	                        throw new DuplicateResourceException("GST number already registered");
-	                    });
-	        }
-	        
-	        CurrentAccount currentAccount = new CurrentAccount();
+    @Override
+    @Transactional
+    public CurrentAccountResponse createCurrentAccount(CurrentAccountRequest request, Long userId) {
 
-	        // common account fields
-	        currentAccount.setUser(user);
-	        currentAccount.setBranch(branch);
-	        currentAccount.setAccountNumber(accountNumberGenerator.generateAccountNumber());
-	        currentAccount.setAccountBalance(BigDecimal.ZERO);
-	        currentAccount.setMinimumRequiredBalance(new BigDecimal(Constants.DEFAULT_CURRENT_MIN_BALANCE));
-	        currentAccount.setIsActive(true);
-	        currentAccount.setAccountStatus(AccountStatus.ACTIVE);
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(Constants.ERROR_USER_NOT_FOUND));
 
-	        // current specific fields
-	        currentAccount.setOverdraftLimit(new BigDecimal(Constants.DEFAULT_OVERDRAFT_LIMIT));
-	        currentAccount.setGstNumber(request.getGstNumber());
-	        currentAccount.setOverdraftIntRate(Double.parseDouble(Constants.DEFAULT_OVERDRAFT_INTEREST_RATE));
-	        currentAccount.setMonthlyServiceFee(new BigDecimal(Constants.DEFAULT_MONTHLY_SERVICE_FEE));
-	        currentAccount.setOverdraftUsed(false);
-	        currentAccount.setFreeTransLimit(Constants.DEFAULT_FREE_TRANS_LIMIT);
+        Branch branch = branchRepository.findById(request.getBranchId())
+                .orElseThrow(() -> new ResourceNotFoundException(Constants.ERROR_BRANCH_NOT_FOUND));
 
-	        // 6. Save
-	        CurrentAccount saved = currentAccountRepository.save(currentAccount);
+        // ✅ REMOVED restriction → now multiple current accounts allowed
 
-	        // 7. Map to response and return
-	        return accountMapper.toCurrentAccountResponse(saved);
-	
-	}
+        // ✅ Keep GST uniqueness check
+        if (request.getGstNumber() != null && !request.getGstNumber().isBlank()) {
+            currentAccountRepository.findByGstNumber(request.getGstNumber())
+                    .ifPresent(a -> {
+                        throw new DuplicateResourceException("GST number already registered");
+                    });
+        }
 
-	@Override
-	public AccountResponse getAccountById(Long accountId) {
-		return accountRepository.findById(accountId)
+        CurrentAccount currentAccount = new CurrentAccount();
+
+        currentAccount.setUser(user);
+        currentAccount.setBranch(branch);
+        currentAccount.setAccountNumber(accountNumberGenerator.generateAccountNumber());
+        currentAccount.setAccountBalance(BigDecimal.ZERO);
+        currentAccount.setMinimumRequiredBalance(new BigDecimal(Constants.DEFAULT_CURRENT_MIN_BALANCE));
+        currentAccount.setIsActive(true);
+        currentAccount.setAccountStatus(AccountStatus.ACTIVE);
+
+        currentAccount.setOverdraftLimit(new BigDecimal(Constants.DEFAULT_OVERDRAFT_LIMIT));
+        currentAccount.setGstNumber(request.getGstNumber());
+        currentAccount.setOverdraftIntRate(Double.parseDouble(Constants.DEFAULT_OVERDRAFT_INTEREST_RATE));
+        currentAccount.setMonthlyServiceFee(new BigDecimal(Constants.DEFAULT_MONTHLY_SERVICE_FEE));
+        currentAccount.setOverdraftUsed(false);
+        currentAccount.setFreeTransLimit(Constants.DEFAULT_FREE_TRANS_LIMIT);
+
+        CurrentAccount saved = currentAccountRepository.save(currentAccount);
+
+        return accountMapper.toCurrentAccountResponse(saved);
+    }
+
+    @Override
+    public AccountResponse getAccountById(Long accountId) {
+        return accountRepository.findById(accountId)
                 .map(account -> {
                     if (account instanceof SavingsAccount) {
                         return (AccountResponse) accountMapper
@@ -146,15 +133,15 @@ public class AccountServiceImpl implements AccountService{
                     throw new BadRequestException("Unknown account type");
                 })
                 .orElseThrow(() -> new ResourceNotFoundException(Constants.ERROR_ACCOUNT_NOT_FOUND));
-	}
+    }
 
-	@Override
-	public List<AccountResponse> getAccountsByUserId(Long userId) {
-		
-		userRepository.findById(userId)
-        .orElseThrow(() -> new ResourceNotFoundException(Constants.ERROR_USER_NOT_FOUND));
-		
-		return accountRepository.findByUser_UserId(userId)
+    @Override
+    public List<AccountResponse> getAccountsByUserId(Long userId) {
+
+        userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(Constants.ERROR_USER_NOT_FOUND));
+
+        return accountRepository.findByUser_UserId(userId)
                 .stream()
                 .map(account -> {
                     if (account instanceof SavingsAccount) {
@@ -167,6 +154,5 @@ public class AccountServiceImpl implements AccountService{
                     throw new BadRequestException("Unknown account type");
                 })
                 .collect(Collectors.toList());
-	}
-
+    }
 }

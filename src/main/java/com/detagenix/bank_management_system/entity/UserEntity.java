@@ -28,19 +28,9 @@ public class UserEntity extends BaseEntity {
     @Column(nullable = false, length = 100)
     private String lastName;
 
-    // ================= TRANSACTIONS =================
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Transaction> transactions = new ArrayList<>();
-
     // ================= BASIC DETAILS =================
     @Column(unique = true, nullable = false)
     private String email;
-
-    @OneToMany(mappedBy = "user",
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-            orphanRemoval = true,
-            fetch = FetchType.LAZY)
-    private List<Address> addresses = new ArrayList<>();
 
     @Column(unique = true, nullable = false, length = 15)
     private String phoneNumber;
@@ -50,6 +40,26 @@ public class UserEntity extends BaseEntity {
 
     @Column(unique = true, length = 10)
     private String panNumber;
+
+    // ================= ACCOUNTS (NEW - IMPORTANT) =================
+    @OneToMany(mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    private List<Account> accounts = new ArrayList<>();
+
+    // ================= TRANSACTIONS =================
+    @OneToMany(mappedBy = "user",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    private List<Transaction> transactions = new ArrayList<>();
+
+    // ================= ADDRESSES =================
+    @OneToMany(mappedBy = "user",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    private List<Address> addresses = new ArrayList<>();
 
     // ================= KYC =================
     @OneToOne(fetch = FetchType.LAZY,
@@ -83,7 +93,7 @@ public class UserEntity extends BaseEntity {
     @Column(nullable = false)
     private Integer failedLoginAttempts = 0;
 
-    // ================= ROLE (UPDATED) =================
+    // ================= ROLE =================
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Role role;
