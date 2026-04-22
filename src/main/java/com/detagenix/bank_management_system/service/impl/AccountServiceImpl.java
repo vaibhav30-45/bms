@@ -53,6 +53,7 @@ public class AccountServiceImpl implements AccountService {
         Branch branch = branchRepository.findById(request.getBranchId())
                 .orElseThrow(() -> new ResourceNotFoundException(Constants.ERROR_BRANCH_NOT_FOUND));
 
+        // ✅ LIMIT: max 2 savings accounts
         long savingsCount = savingsAccountRepository.countByUser_UserId(userId);
         if (savingsCount >= 2) {
             throw new BadRequestException("Maximum 2 savings accounts allowed per user");
@@ -89,6 +90,7 @@ public class AccountServiceImpl implements AccountService {
         Branch branch = branchRepository.findById(request.getBranchId())
                 .orElseThrow(() -> new ResourceNotFoundException(Constants.ERROR_BRANCH_NOT_FOUND));
 
+        // ✅ LIMIT: max 2 current accounts
         long currentCount = currentAccountRepository.countByUser_UserId(userId);
         if (currentCount >= 2) {
             throw new BadRequestException("Maximum 2 current accounts allowed per user");

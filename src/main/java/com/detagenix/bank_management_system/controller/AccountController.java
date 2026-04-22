@@ -5,17 +5,15 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.detagenix.bank_management_system.dto.request.CurrentAccountRequest;
 import com.detagenix.bank_management_system.dto.request.SavingsAccountRequest;
-import com.detagenix.bank_management_system.dto.response.AccountResponse;
-import com.detagenix.bank_management_system.dto.response.ApiResponse;
-import com.detagenix.bank_management_system.dto.response.CurrentAccountResponse;
-import com.detagenix.bank_management_system.dto.response.SavingsAccountResponse;
+import com.detagenix.bank_management_system.dto.response.*;
+import com.detagenix.bank_management_system.security.CustomUserDetails;
 import com.detagenix.bank_management_system.service.AccountService;
 import com.detagenix.bank_management_system.util.Constants;
-import com.detagenix.bank_management_system.security.CustomUserDetails;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,18 +25,11 @@ public class AccountController {
 
     private final AccountService accountService;
 
-    // ✅ FIXED METHOD
+    // ✅ CLEAN & FINAL METHOD
     private Long getAuthenticatedUserId() {
-
-        Object principal = SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getPrincipal();
-
-        if (principal instanceof CustomUserDetails userDetails) {
-            return userDetails.getUserId(); // ✅ correct
-        }
-
-        throw new RuntimeException("User not authenticated properly");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        return userDetails.getUserId();
     }
 
     @PostMapping("/savings")
@@ -46,9 +37,7 @@ public class AccountController {
             @Valid @RequestBody SavingsAccountRequest request) {
 
         Long userId = getAuthenticatedUserId();
-
-        SavingsAccountResponse response =
-                accountService.createSavingsAccount(request, userId);
+        SavingsAccountResponse response = accountService.createSavingsAccount(request, userId);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -60,9 +49,7 @@ public class AccountController {
             @Valid @RequestBody CurrentAccountRequest request) {
 
         Long userId = getAuthenticatedUserId();
-
-        CurrentAccountResponse response =
-                accountService.createCurrentAccount(request, userId);
+        CurrentAccountResponse response = accountService.createCurrentAccount(request, userId);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -84,9 +71,7 @@ public class AccountController {
     public ResponseEntity<ApiResponse<List<AccountResponse>>> getMyAccounts() {
 
         Long userId = getAuthenticatedUserId();
-
-        List<AccountResponse> response =
-                accountService.getAccountsByUserId(userId);
+        List<AccountResponse> response = accountService.getAccountsByUserId(userId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
