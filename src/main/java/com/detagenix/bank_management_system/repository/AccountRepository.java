@@ -20,4 +20,6 @@ public interface AccountRepository extends JpaRepository<Account, Long>{
     boolean existsByAccountNumber(String accountNumber);
 
     List<Account> findByAccountStatus(AccountStatus accountStatus);
+    long countByUser_UserId(Long userId);   // ✅ ADD THIS
+
 }

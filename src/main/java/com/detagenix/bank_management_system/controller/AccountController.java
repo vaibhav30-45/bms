@@ -25,10 +25,11 @@ public class AccountController {
 
     private final AccountService accountService;
 
+    // ✅ CLEAN & FINAL METHOD
     private Long getAuthenticatedUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        return userDetails.getUser().getUserId(); // ✅ FIXED
+        return userDetails.getUserId();
     }
 
     @PostMapping("/savings")
@@ -38,7 +39,8 @@ public class AccountController {
         Long userId = getAuthenticatedUserId();
         SavingsAccountResponse response = accountService.createSavingsAccount(request, userId);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
                 .body(ApiResponse.success(Constants.SUCCESS_ACCOUNT_CREATED, response));
     }
 
@@ -49,16 +51,19 @@ public class AccountController {
         Long userId = getAuthenticatedUserId();
         CurrentAccountResponse response = accountService.createCurrentAccount(request, userId);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
                 .body(ApiResponse.success(Constants.SUCCESS_ACCOUNT_CREATED, response));
     }
 
     @GetMapping("/{accountId}")
-    public ResponseEntity<ApiResponse<AccountResponse>> getAccountById(@PathVariable Long accountId) {
+    public ResponseEntity<ApiResponse<AccountResponse>> getAccountById(
+            @PathVariable Long accountId) {
 
         AccountResponse response = accountService.getAccountById(accountId);
 
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity
+                .status(HttpStatus.OK)
                 .body(ApiResponse.success(response));
     }
 
@@ -68,7 +73,8 @@ public class AccountController {
         Long userId = getAuthenticatedUserId();
         List<AccountResponse> response = accountService.getAccountsByUserId(userId);
 
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity
+                .status(HttpStatus.OK)
                 .body(ApiResponse.success(response));
     }
 }

@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class CurrentAccountResponse extends AccountResponse{
 	private BigDecimal overdraftLimit;
-    private String gstNumber;
+//    private String gstNumber;
     private Double overdraftIntRate;
     private BigDecimal monthlyServiceFee;
     private Boolean overdraftUsed;

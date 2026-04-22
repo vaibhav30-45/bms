@@ -19,7 +19,6 @@ import com.detagenix.bank_management_system.entity.SavingsAccount;
 import com.detagenix.bank_management_system.entity.UserEntity;
 import com.detagenix.bank_management_system.enums.AccountStatus;
 import com.detagenix.bank_management_system.exception.BadRequestException;
-import com.detagenix.bank_management_system.exception.DuplicateResourceException;
 import com.detagenix.bank_management_system.exception.ResourceNotFoundException;
 import com.detagenix.bank_management_system.repository.AccountRepository;
 import com.detagenix.bank_management_system.repository.BranchRepository;
@@ -54,7 +53,11 @@ public class AccountServiceImpl implements AccountService {
         Branch branch = branchRepository.findById(request.getBranchId())
                 .orElseThrow(() -> new ResourceNotFoundException(Constants.ERROR_BRANCH_NOT_FOUND));
 
-        // ✅ REMOVED restriction → now multiple savings accounts allowed
+        // ✅ LIMIT: max 2 savings accounts
+        long savingsCount = savingsAccountRepository.countByUser_UserId(userId);
+        if (savingsCount >= 2) {
+            throw new BadRequestException("Maximum 2 savings accounts allowed per user");
+        }
 
         SavingsAccount savingsAccount = new SavingsAccount();
 
@@ -87,14 +90,10 @@ public class AccountServiceImpl implements AccountService {
         Branch branch = branchRepository.findById(request.getBranchId())
                 .orElseThrow(() -> new ResourceNotFoundException(Constants.ERROR_BRANCH_NOT_FOUND));
 
-        // ✅ REMOVED restriction → now multiple current accounts allowed
-
-        // ✅ Keep GST uniqueness check
-        if (request.getGstNumber() != null && !request.getGstNumber().isBlank()) {
-            currentAccountRepository.findByGstNumber(request.getGstNumber())
-                    .ifPresent(a -> {
-                        throw new DuplicateResourceException("GST number already registered");
-                    });
+        // ✅ LIMIT: max 2 current accounts
+        long currentCount = currentAccountRepository.countByUser_UserId(userId);
+        if (currentCount >= 2) {
+            throw new BadRequestException("Maximum 2 current accounts allowed per user");
         }
 
         CurrentAccount currentAccount = new CurrentAccount();
@@ -108,7 +107,6 @@ public class AccountServiceImpl implements AccountService {
         currentAccount.setAccountStatus(AccountStatus.ACTIVE);
 
         currentAccount.setOverdraftLimit(new BigDecimal(Constants.DEFAULT_OVERDRAFT_LIMIT));
-        currentAccount.setGstNumber(request.getGstNumber());
         currentAccount.setOverdraftIntRate(Double.parseDouble(Constants.DEFAULT_OVERDRAFT_INTEREST_RATE));
         currentAccount.setMonthlyServiceFee(new BigDecimal(Constants.DEFAULT_MONTHLY_SERVICE_FEE));
         currentAccount.setOverdraftUsed(false);
