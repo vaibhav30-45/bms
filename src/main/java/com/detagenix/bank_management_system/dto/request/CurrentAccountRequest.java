@@ -6,7 +6,11 @@ import lombok.Data;
 @Data
 public class CurrentAccountRequest {
 
+<<<<<<< Updated upstream
     @NotNull(message = "Branch ID is required")
     private Long branchId;
 
 }
+=======
+}
+>>>>>>> Stashed changes
