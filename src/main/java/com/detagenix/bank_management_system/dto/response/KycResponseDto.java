@@ -12,25 +12,39 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor 
 @AllArgsConstructor
-@Builder
-public class KycResponseDto {
-	private Long kycId;
-
-    private Long userId;         // flattened from UserEntity
-    private String userName;     // flattened from UserEntity (optional, if useful)
-
-    private KycStatus kycStatus;
-
-    private String aadharNumber;
-    private String panNumber;
-
-    private String documentPath;
-
-    
-    private LocalDateTime verifiedAt;
-
-    private String rejectionReason;
-
-    private LocalDateTime createdAt;  // from BaseEntity
-    private LocalDateTime updatedAt;  // from BaseEntity
+public class KycResponseDto { 
+	
+	 private Long userId;
+	    private String userName;            // firstName + " " + lastName
+	 
+	    // ── KYC record ───────────────────────────────────────────
+	    private Long kycId;
+	 
+	    // ── Step 1: Identity (aadharNumber & panNumber are masked) ─
+	    private String aadharNumber;        // XXXX-XXXX-3456
+	    private String aadharName;
+	    private String panNumber;           // XXXXX1234F
+	    private String panName;
+	    private String dateOfBirth;
+	    private String address;
+	 
+	    // ── Step 2: PDF ───────────────────────────────────────────
+	    private String documentPath;
+	 
+	    // ── Step 3: Video ─────────────────────────────────────────
+	    private String videoPath;
+	 
+	    // ── Status ───────────────────────────────────────────────
+	    private KycStatus kycStatus;
+	    private KycStatus documentStatus;
+	    private String documentType;
+	 
+	    // ── Step completion flags ─────────────────────────────────
+	    private boolean infoSubmitted;
+	    private boolean documentsSubmitted;
+	    private boolean videoSubmitted;
+	 
+	    // ── Admin ─────────────────────────────────────────────────
+	    private String rejectionReason;
 }
+
