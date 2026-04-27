@@ -14,22 +14,29 @@ import lombok.NoArgsConstructor;
 @Builder
 public class kycRequestDto {
 	
-	@NotBlank(message = "Aadhar number is required")
-    @Pattern(
-        regexp = "^[2-9]{1}[0-9]{11}$",
-        message = "Aadhar number must be a valid 12-digit number"
-    )
-    private String aadharNumber;
-
-    @NotBlank(message = "PAN number is required")
-    @Pattern(
-        regexp = "^[A-Z]{5}[0-9]{4}[A-Z]{1}$",
-        message = "PAN number must be in valid format (e.g., ABCDE1234F)"
-    )
-    private String panNumber;
-
-    @NotBlank(message = "Document path is required")
-    @Size(max = 500, message = "Document path must not exceed 500 characters")
-    private String documentPath;
-
+	  @NotBlank(message = "Aadhaar number is required")
+	    @Pattern(regexp = "^[2-9]{1}[0-9]{11}$", message = "Invalid Aadhaar number (must be 12 digits, starting with 2-9)")
+	    private String aadharNumber;
+	 
+	    @NotBlank(message = "Name on Aadhaar is required")
+	    @Size(min = 2, max = 100)
+	    private String aadharName;
+	 
+	    @NotBlank(message = "Date of birth is required")
+	    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "DOB must be in format YYYY-MM-DD")
+	    private String dateOfBirth;
+	 
+	    @NotBlank(message = "Address is required")
+	    @Size(min = 10, max = 300)
+	    private String address;
+	 
+	    // ── PAN ───────────────────────────────────────────────────
+	    // Field name matches entity field "panNumber" exactly
+	    @NotBlank(message = "PAN number is required")
+	    @Pattern(regexp = "^[A-Z]{5}[0-9]{4}[A-Z]{1}$", message = "Invalid PAN format (e.g. ABCDE1234F)")
+	    private String panNumber;
+	 
+	    @NotBlank(message = "Name on PAN is required")
+	    @Size(min = 2, max = 100)
+	    private String panName;
 }
