@@ -13,9 +13,6 @@ public interface CurrentAccountRepository extends JpaRepository<CurrentAccount, 
 
     List<CurrentAccount> findByUser_UserId(Long userId);
 
-<<<<<<< Updated upstream
     long countByUser_UserId(Long userId);
-=======
-    long countByUser_UserId(Long userId); // ✅ for limiting to 2 accounts
->>>>>>> Stashed changes
+
 }

@@ -14,11 +14,7 @@ public interface SavingsAccountRepository extends JpaRepository<SavingsAccount, 
     Optional<SavingsAccount> findByAccountNumber(String accountNumber);
 
     List<SavingsAccount> findByUser_UserId(Long userId);
-<<<<<<< Updated upstream
+
     long countByUser_UserId(Long userId);
 }
-=======
 
-    long countByUser_UserId(Long userId); // ✅ for limiting to 2 accounts
-}
->>>>>>> Stashed changes
