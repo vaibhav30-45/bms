@@ -41,7 +41,10 @@ public class SecurityConfig {
                         ).permitAll()
 
                         // ✅ ADMIN ONLY ACCESS
-                        .requestMatchers("/api/kyc/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(
+                                "/api/kyc/**",
+                                "/api/admin/**"
+                        ).hasAuthority("ROLE_ADMIN")
 
                         .anyRequest().authenticated()
                 )

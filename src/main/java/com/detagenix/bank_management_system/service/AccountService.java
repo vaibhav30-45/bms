@@ -8,6 +8,7 @@ import com.detagenix.bank_management_system.dto.response.AccountResponse;
 import com.detagenix.bank_management_system.dto.response.CurrentAccountResponse;
 import com.detagenix.bank_management_system.dto.response.SavingsAccountResponse;
 
+
 public interface AccountService {
 	
 	SavingsAccountResponse createSavingsAccount(SavingsAccountRequest request, Long userId);
@@ -15,7 +16,13 @@ public interface AccountService {
     CurrentAccountResponse createCurrentAccount(CurrentAccountRequest request, Long userId);
 
     AccountResponse getAccountById(Long accountId);
+    
+    List<AccountResponse> getAllAccounts();
 
     List<AccountResponse> getAccountsByUserId(Long userId);
+    List<SavingsAccountResponse> getAllSavingsAccounts();
+
+    List<CurrentAccountResponse> getAllCurrentAccounts();
 	
 }
+																																																																																																											
