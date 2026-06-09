@@ -153,4 +153,45 @@ public class AccountServiceImpl implements AccountService {
                 })
                 .collect(Collectors.toList());
     }
+    
+    @Override
+    public List<AccountResponse> getAllAccounts() {
+
+        return accountRepository.findAll()
+                .stream()
+                .map(account -> {
+
+                    if(account instanceof SavingsAccount) {
+                        return (AccountResponse)
+                                accountMapper.toSavingsAccountResponse(
+                                        (SavingsAccount) account);
+                    }
+
+                    if(account instanceof CurrentAccount) {
+                        return (AccountResponse)
+                                accountMapper.toCurrentAccountResponse(
+                                        (CurrentAccount) account);
+                    }
+
+                    throw new BadRequestException("Unknown account type");
+                })
+                .toList();
+    }
+    @Override
+    public List<SavingsAccountResponse> getAllSavingsAccounts() {
+
+        return savingsAccountRepository.findAll()
+                .stream()
+                .map(accountMapper::toSavingsAccountResponse)
+                .toList();
+    }
+
+    @Override
+    public List<CurrentAccountResponse> getAllCurrentAccounts() {
+
+        return currentAccountRepository.findAll()
+                .stream()
+                .map(accountMapper::toCurrentAccountResponse)
+                .toList();
+    }
 }
